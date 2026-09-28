@@ -29,10 +29,11 @@ import {
 } from "@/components/scroll/scrollClock";
 import {
   MouseSprite,
+  PATH_MOUSE_SIZE,
   pathFootStyle,
   type MouseSpriteHandle,
 } from "@/components/mouse/sprite/MouseSprite";
-import { poseFrames } from "@/components/mouse/sprite/clips";
+import { MOUSE_FOOT_PAD, MOUSE_FRAME_SIZE, poseFrames } from "@/components/mouse/sprite/clips";
 import { createRestPointerDriver } from "@/components/mouse/sprite/restPointer";
 import {
   createScrollPoseState,
@@ -46,8 +47,8 @@ const LETTER_SIZE = 34;
 /** Walk pin: stay on the letter rail at this viewport Y (José Ramón's mark). */
 const WALK_PIN_VH = 0.5;
 const COPY_UNIT = 380;
-/** Extra lift so the belly clears letter caps. Rest y adds this back. */
-const FOOT_LIFT = 36;
+/** Scaled paw pad (MOUSE_FOOT_PAD at sprite height). cssClear = letterHalf + this, not letter + 36. */
+const FOOT_PAD = (MOUSE_FOOT_PAD * PATH_MOUSE_SIZE.height) / MOUSE_FRAME_SIZE.height;
 const SCROLL_DIR_EPS = 1;
 /** Browser-restored scrollTop on remount. Typical wheel is ~100–150px. */
 const REMOUNT_SCROLL_EPS = 400;
@@ -247,9 +248,10 @@ export function ScrollLab() {
         const svgPoint = railEl.getPointAtLength(clamped);
         const { x, y } = svgToTrack(svgPoint.x, svgPoint.y);
         const letterPx = LETTER_SIZE * (trackEl.clientWidth / VIEW_W);
-        // Letter + FOOT_LIFT along the signed rail normal (viewport-center scoring).
-        // Rejected: sole fire-center-normal, 102px center-fire, always-left, blend vector.
-        const cssClear = letterPx + FOOT_LIFT;
+        // Letter half + scaled paw pad along the signed rail normal (viewport-center scoring).
+        // Rejected: sole fire-center-normal, 102px center-fire, always-left, blend vector, letter+36 FOOT_LIFT.
+        const letterHalf = letterPx / 2;
+        const cssClear = letterHalf + FOOT_PAD;
         const tangentDeg = railTangentDeg(railEl, clamped, total);
         const rad = (tangentDeg * Math.PI) / 180;
         const nx = -Math.sin(rad);
@@ -259,7 +261,6 @@ export function ScrollLab() {
           restIndexFromAlong(clamped, cheeseAlongRef.current, REST_ALONG_GAP) !=
           null;
         const applyClear = walking || (rotateDeg === 0 && !cheeseRest);
-        const verticalRail = Math.abs(Math.sin(rad)) >= Math.abs(Math.cos(rad));
         const absSin = Math.abs(Math.sin(rad));
         const absCos = Math.abs(Math.cos(rad));
         const verticalness = absSin + absCos > 0 ? absSin / (absSin + absCos) : 0;
@@ -281,40 +282,33 @@ export function ScrollLab() {
           nSign = lastClearSign;
         } else {
           nSign = score >= 0 ? 1 : -1;
-          lastClearSign = nSign;
         }
+        // Hold start/left nSign=-1 through the first top-right quarter so the
+        // first corner does not cross the arc. Allow +1 only on the right
+        // vertical rail (open field is toward center — foot left of letters).
+        const onRightEdge =
+          verticalness >= 0.85 && svgPoint.x >= VIEW_W * 0.92;
+        if (lastClearSign === -1 && !onRightEdge) {
+          nSign = -1;
+        }
+        lastClearSign = nSign;
         // Offset is always a signed rail-normal * cssClear (never bx/by).
         let ox = applyClear ? nSign * nx * cssClear : 0;
         let oy = applyClear ? nSign * ny * cssClear : 0;
-        // Down: scaleY(-1) on the parent wrap (flip across the path / local X).
-        // CSS applies right-to-left: scaleY, then rotate (heading), then translate (foot).
-        // Curve +180 heading inverts local body onto the glyphs; parent scaleY(-1)
-        // around the foot restores the down-walk hang. Toggle remains vertical-only.
-        // Sit/rest (rotateDeg === 0): never invent scaleY. Do not invert with child setFacing.
-        const headingFlipped = Math.abs(rotateDeg - tangentDeg) > 90;
-        let parentScaleY = walking && (verticalRail ? lastDir >= 0 : headingFlipped);
-        const applyMouseTransform = () => {
-          mouseWrap.style.transform = parentScaleY
-            ? `translate(${x + ox}px, ${y + oy}px) rotate(${rotateDeg}deg) scaleY(-1)`
-            : `translate(${x + ox}px, ${y + oy}px) rotate(${rotateDeg}deg)`;
-        };
-        applyMouseTransform();
-        const letterHalf = letterPx / 2;
-        const wrapMeasure = mouseWrap.getBoundingClientRect();
-        const xInside = Math.min(
-          screen.x - wrapMeasure.left,
-          wrapMeasure.right - screen.x,
-        );
-        const yInside = Math.min(
-          screen.y - wrapMeasure.top,
-          wrapMeasure.bottom - screen.y,
-        );
-        const glyphHit = xInside >= -letterHalf && yInside >= -letterHalf;
-        // Sit/rest uses rotateDeg === 0 (walking=false); do not invent scaleY there.
-        if (walking && verticalRail && glyphHit && Math.max(xInside, yInside) > 40) {
-          parentScaleY = !parentScaleY;
-          applyMouseTransform();
-        }
+        // One question after rotate: does the body point at the rail? Not a 45° mode switch.
+        // CSS Y-down. Local body from the foot is (0, -1) before rotate.
+        // MDN: rotate() is a rigid 2D turn about transform-origin (the foot);
+        // +180 is a point reflection, not a scaleY squash through the foot.
+        // Sit/rest (walking=false / rotateDeg === 0): never invent a flip.
+        const rotateRad = (rotateDeg * Math.PI) / 180;
+        const bodyX = Math.sin(rotateRad);
+        const bodyY = -Math.cos(rotateRad);
+        const towardX = -nSign * nx;
+        const towardY = -nSign * ny;
+        const bodyFacesRail =
+          walking && bodyX * towardX + bodyY * towardY > 1e-6;
+        const paintDeg = bodyFacesRail ? rotateDeg + 180 : rotateDeg;
+        mouseWrap.style.transform = `translate(${x + ox}px, ${y + oy}px) rotate(${paintDeg}deg)`;
         return {
           along,
           x: svgPoint.x,
