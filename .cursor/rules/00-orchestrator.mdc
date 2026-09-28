@@ -36,7 +36,7 @@ José Ramón improvises; the orchestrator must **frequently ask** short clarifyi
 ## Task contract (blocking)
 Every Task launch and resume **must** set:
 - `subagent_type` — exact custom agent name
-- `model` — Cursor allowlist slug from `01-models.mdc` (only `cursor-grok-4.6-high`, `cursor-grok-4.6-medium`, `composer-2.5`). Required on every Task **launch and resume**. Never `inherit`, never omit, never take from the Cursor model picker (empty picker still needs an explicit slug). Never bracket forms (`grok-4.6[effort=…]`). Never `cursor-grok-4.6-xhigh` / any xhigh.
+- `model` — Cursor allowlist slug from `01-models.mdc` (only `cursor-grok-4.7-high`, `cursor-grok-4.7-medium`, `composer-2.5`). Required on every Task **launch and resume**. Never `inherit`, never omit, never Fast, never take from the Cursor model picker. Never bracket forms. Never xhigh. Never `cursor-grok-4.6-*`.
 - Prompt — outcome, cwd/worktree, asset paths, done criteria, `## Skills to load before work` with exact `SKILL.md` paths, and an explicit step **Consult official docs before writing any product code** (see `04-official-docs.mdc`). No Context7.
 - **No** `EFFORT:` line in the prompt (effort lives only in the `model` slug).
 
@@ -44,11 +44,11 @@ Refuse launch/resume if type or model is omitted. Before launch, Read that agent
 
 
 ## Effort shorthand from the human
-If the human says only `high`, `medium`, or `low`, map it to the matching Cursor slug from `01-models.mdc` (`high` → `cursor-grok-4.6-high`, `medium`/`low` → `cursor-grok-4.6-medium`) and use that on the Task. Confirm the mapped slug in one short line. Never leave Task `model` empty because they typed a bare effort word. Never invent `cursor-grok-4.6-low`.
+If the human says only `high`, `medium`, or `low`, map it to the matching Cursor slug from `01-models.mdc` (`high` → `cursor-grok-4.7-high`, `medium`/`low` → `cursor-grok-4.7-medium`) and use that on the Task. Confirm the mapped slug in one short line. Never leave Task `model` empty because they typed a bare effort word. Never invent `cursor-grok-4.7-low`. Never Fast.
 
-If the human says `xhigh` / Extra High: **refuse**. Tell them xhigh is forbidden for this project and ask for `high` or `medium`. Do **not** launch with `cursor-grok-4.6-xhigh`.
+If the human says `xhigh` / Extra High: **refuse**. Ask for `high` or `medium`. Do **not** launch xhigh. If they (or the UI) pick Fast: **refuse** and ask for non-Fast 4.7 high/medium or `composer-2.5`.
 
-If the live Cursor Task allowlist for this session does not include `high`/`medium` (intersection with project allowlist empty): **stop and tell the human** — do not substitute xhigh, 4.7, 4.5, Fast, or inherit. See `01-models.mdc` § Cursor allowlist drift.
+If the live Cursor Task allowlist for this session does not include 4.7 `high`/`medium` (intersection with project allowlist empty): **stop and tell the human** — do not substitute 4.6, xhigh, Fast, or inherit. See `01-models.mdc` § Cursor allowlist drift.
 
 ## Engram / Gentle (session memory — not a roadmap)
 No beat/roadmap board unless the human asks for one later. Improvisation is expected.

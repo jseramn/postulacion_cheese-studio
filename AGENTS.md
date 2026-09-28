@@ -17,15 +17,13 @@ Interactive storytelling microsite.
 All Cursor modes (Agent, Plan, Ask, Debug, Multitask) inherit the orchestrator hard rules — switching mode does not let the parent write product code. Plan markdown is fine; implementing plans and Debug patches go through Tasks with explicit `model`. Ask clarifying questions before `CreatePlan`, before the first Task on a new outcome, and before claiming Done (1–3 short questions). Project overlay wins over Never Block when that would skip questions.
 
 ## Models
-- `cursor-grok-4.6-high` — complex / greenfield / motion architecture (default for complex work)
-- `cursor-grok-4.6-medium` — follow-ups / polish; also maps human `low` (no `*-low` slug in Cursor)
+- `cursor-grok-4.7-high` — complex / greenfield / motion architecture (default for complex work)
+- `cursor-grok-4.7-medium` — follow-ups / polish; also maps human `low` (no `*-low` slug in Cursor)
 - `composer-2.5` — commits, shell, move/copy, mechanical deploy
-- **Never** `cursor-grok-4.6-xhigh` / any xhigh — even if Cursor only lists xhigh for 4.6 this session
-- Never Fast (`composer-2.5-fast`). Never `inherit` / Auto / omit `model` on Task launch **or resume**.
-- Never bracket forms (`grok-4.6[effort=…]`). Never `grok-4.7-*` / `cursor-grok-4.5-*` even if Cursor lists them.
-- Bare effort words: `high` → `cursor-grok-4.6-high`; `medium`/`low` → `cursor-grok-4.6-medium`. If human says `xhigh`: refuse and ask for high/medium.
-- Cursor allowlist drift: read live Task allowlist each session; use intersection with this project table; if empty → stop and tell the human (do not substitute xhigh / 4.7 / 4.5 / Fast / inherit).
-- If Cursor rejects a slug: stop and report — do not fall back to inherit, xhigh, or 4.7.
+- **Only these three.** Never Fast (incl. UI “High Fast”). Never xhigh. Never `cursor-grok-4.6-*` / 4.5 / inherit / Auto / omit `model` on Task launch **or resume**.
+- Bare effort words: `high` → `cursor-grok-4.7-high`; `medium`/`low` → `cursor-grok-4.7-medium`. If human says `xhigh` or picks Fast: refuse.
+- Cursor allowlist drift: intersection with this table; if empty → stop (do not fall back to 4.6 / Fast / xhigh / inherit).
+- If Cursor rejects a slug: stop and report — do not fall back to 4.6 or Fast.
 
 ## Typography
 - Cheese brand reference: **Benzin Semibold** (see `.cursor/rules/05-typography.mdc`).
