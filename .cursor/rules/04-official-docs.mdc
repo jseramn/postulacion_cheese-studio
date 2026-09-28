@@ -1,0 +1,30 @@
+---
+description: Mandatory official-docs consult before any product code — Next.js, anime.js, Canvas UI via canonical docs only.
+alwaysApply: true
+---
+
+# Official documentation gate
+
+**Hard rule:** no product code until the implementing agent has consulted **current official docs** for the APIs it will use.
+
+## Who does the consult
+- **Writers / apply / explore-for-implementation Tasks** — required. Before the first product edit, open the **canonical official docs** (WebFetch / browser / package docs matching the installed version) for every library touch in the outcome (Next.js App Router, anime.js, Canvas UI). Implement from that evidence, not from memory.
+- **Orchestrator** — does **not** deep-research docs in the parent chat (keeps context thin). It **enforces** the gate: every writer prompt must include an explicit step *“Consult official docs before writing code”* and the doc targets. If a writer returns code with no doc evidence, reject and relaunch.
+
+## What counts as official
+| Tech | Prefer |
+| --- | --- |
+| Next.js | nextjs.org docs (App Router) + matching major for the installed package |
+| anime.js | Official anime.js docs for the installed major version |
+| Canvas UI | canvasui.dev (or the package README matching the installed version) |
+| Magic UI | magicui.design docs + official MCP `@magicuidesign/mcp` |
+| Aceternity UI | ui.aceternity.com docs + `@aceternity` registry via shadcn |
+| Skiper UI | skiper-ui.com docs + `@skiper-ui` registry via shadcn |
+
+Do **not** use Context7 (or similar third-party doc proxies). Do not treat blog posts, random GitHub issues, or model memory as the source of truth when they conflict with official docs.
+
+## Evidence in the result
+Writer results must briefly name what was consulted (library + topic + official URL or doc path) before summarizing the code change. No invented API shapes.
+
+## Engram
+Engram is part of the Gentle-AI stack on this machine. At session start the orchestrator runs `mem_context` with this repo’s project key. After durable decisions (stack choices, motion architecture, **accepted visual looks**, doc-derived constraints), `mem_save` so later Tasks reuse them. Doc facts that should stick across sessions go to Engram — still re-check official docs when APIs may have changed. See also `06-labs-engram.mdc`.

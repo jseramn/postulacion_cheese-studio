@@ -1,0 +1,30 @@
+---
+description: Fixed stack — Next.js App Router, anime.js scroll motor, Canvas UI aesthetic layer.
+alwaysApply: true
+---
+
+# Stack
+
+Fixed unless the human renames it in this chat:
+
+| Layer | Tech | Responsibility |
+| --- | --- | --- |
+| App | **Next.js** (App Router) | Routes, layout, deploy surface |
+| Motion / interaction motor | **anime.js** | Scroll-linked motion, path, timing (cheese-mouse walk, crumbs) |
+| Aesthetic / GPU | **Canvas UI** | Visual effects over copy and surfaces — not scroll physics |
+
+## Product intent
+Interactive storytelling microsite. Homage SVG logo (mouse body = Swiss cheese wedge). Never claim to be Cheese Studio’s official site.
+
+## Out of core
+Outbound email / mailer product flows are **not** this repo’s core.
+
+## Library docs
+Writers **must** consult **official canonical docs** (nextjs.org, anime.js docs, canvasui.dev / package README) **before** writing code. See `04-official-docs.mdc`. **No Context7.** Orchestrator enforces this in every writer Task prompt; it does not replace the writer’s consult.
+
+## Greenfield scaffold
+Work **only** in this repo directory. Never `/tmp`. Writers follow `12-next-app.mdc` (in-place create-next-app or manual App Router tree). Never delete `.cursor/` / `.atl/` / `.git/`. Restore root `AGENTS.md` after the Next tree exists if it was absent.
+
+## Optional UI kits (additive)
+**Magic UI**, **Aceternity UI**, and **Skiper UI** may be used for effects/sections via shadcn registries (and Magic UI’s official MCP). They do **not** replace anime.js or Canvas UI. **Free tier only** (no Pro licenses). Install via `shadcn add` (MCP = discovery). See `07-ui-registries-mcp.mdc`.
+

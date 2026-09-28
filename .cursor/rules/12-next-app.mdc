@@ -1,0 +1,29 @@
+---
+description: Next.js App Router conventions and greenfield scaffold in this repo directory only.
+globs: app/**/*.{ts,tsx,js,jsx}, src/app/**/*.{ts,tsx,js,jsx}, package.json, next.config.*
+alwaysApply: false
+---
+
+# Next.js App Router
+
+- App Router by default (`app/` or `src/app/`).
+- Client components only where anime.js / Canvas UI need the browser; keep the shell server-friendly where practical.
+- Do not add unrelated product features (auth, CMS, mailer) unless the human asked in this chat.
+
+## Greenfield scaffold (blocking — do not stall)
+
+**Work only inside this repo’s directory.** Do **not** scaffold under `/tmp` or any other temp path. Do **not** delete `.git/`, `.cursor/`, or `.atl/`.
+
+This repo already has agent meta (`.cursor/`, often `.atl/`). `create-next-app` may refuse a non-empty directory.
+
+**Required procedure (in-repo only):**
+
+1. Consult official Next.js App Router docs first (`04-official-docs.mdc`).
+2. Prefer `create-next-app` **into `.`** (this cwd) with current official flags (App Router, TypeScript, etc.) **only if** it succeeds without wiping agent meta.
+3. If `create-next-app` refuses the non-empty dir: **manually** create the Next App Router tree **in this same directory** from official docs (`package.json`, `next.config`, `tsconfig`, `app/` or `src/app/`, etc.). Do not invent APIs. Do not relocate the project.
+4. Never overwrite or remove `.cursor/`, `.atl/`, or `.git/` while scaffolding.
+5. After the Next tree exists, restore root `AGENTS.md` from `~/sistema-operativo/densificar/analisis-cheese-studioia/cursor-rules/AGENTS.md` if it is missing.
+6. Install anime.js + Canvas UI after the Next base lands; read their official docs before wiring them.
+7. Done when `package.json` + App Router entry exist and `npm run build` (or the project’s equivalent) is runnable or the exact blocker is named.
+
+Never ask the human to empty the repo. Never use `/tmp` as a staging ground.

@@ -1,0 +1,12 @@
+---
+description: Canvas UI aesthetic/GPU layer over copy and surfaces — not the scroll physics engine.
+alwaysApply: false
+---
+
+# Canvas UI
+
+Use when implementing visual effects, liquid/glass/particle-style surfaces, or GPU polish over copy.
+
+- Canvas UI = aesthetic / interactive look. It does **not** replace anime.js for scroll path physics.
+- Keep effects layered so storytelling copy stays readable.
+- Prefer documented Canvas UI primitives over one-off WebGL unless the human asks.

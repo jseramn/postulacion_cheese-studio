@@ -1,0 +1,20 @@
+---
+description: Brand type reference (Benzin) and project type family — homage, not a single-font lock.
+alwaysApply: true
+---
+
+# Typography
+
+## Cheese Studio brand reference
+Cheese Studio IA’s wordmark uses **Benzin Semibold** (family Benzin, foundry Supremat / Roman Postovoy). Treat that as the **brand character** we answer to: geometric sans, dense kerning on bold weights, confident display presence.
+
+## Project rule — develop a family, do not lock one face
+- **Do not** make Benzin the only allowed font in the microsite.
+- **Do** design / choose a **small type family** (roles: display / heading / body / mono or UI) whose *feel* is coherent with Benzin — geometric, bold-friendly, tight display tracking — without requiring a paid license for every weight on day one.
+- Homage, not forgery: we are not cloning Cheese’s logo lockup as our exclusive UI type.
+- Stand-ins for local/dev (e.g. Montserrat, Geist, Syne, Figtree) are fine while exploring; document which role each plays and how it relates to the Benzin reference.
+- If/when Benzin (or a licensed equivalent) is available, it may sit in the **display / brand-adjacent** role — still alongside other faces for body/UI.
+
+## When implementing
+- Prefer CSS variables / `next/font` roles (`--font-display`, `--font-heading`, `--font-sans`, …) over hard-coding one family everywhere.
+- Wordmark homage (icon + “Cheese” / “Studio” layout) is separate from UI type — keep logo lockup assets distinct from text styles.

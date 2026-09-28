@@ -1,0 +1,14 @@
+---
+description: anime.js scroll-linked storytelling — cheese-mouse path, crumbs, scroll progress as the clock.
+alwaysApply: false
+---
+
+# anime.js scroll motor
+
+Use when implementing or changing scroll-driven motion.
+
+- Scroll progress is the clock; anime.js owns path, timing, and triggers.
+- Cheese-mouse walk and crumb emission are motor concerns (anime.js), not Canvas UI.
+- Keep motion state readable (progress 0→1 → pose). Avoid fighting React re-renders with ad-hoc timers when scroll sync exists.
+- Homage logo only; do not ship Cheese Studio brand assets as if official.
+- Point writers at existing motion modules in-repo once they exist rather than re-copying patterns into prompts.

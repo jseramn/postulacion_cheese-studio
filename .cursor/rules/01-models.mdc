@@ -1,0 +1,71 @@
+---
+description: Model overlay for Task launches — Cursor Task slugs Grok 4.6 + Composer 2.5 only; never Fast; never inherit; never xhigh.
+alwaysApply: true
+---
+
+# Models
+
+This project uses **Grok 4.6** (plus Composer 2.5 for ops). Effort is encoded in the Cursor Task `model` slug. Bracket overlay strings (`grok-4.6[effort=…,fast=false]`) are **not** valid Task models — Cursor’s allowlist does not accept them.
+
+## Allowed Task models (Cursor allowlist slugs)
+
+| Class | `model` string | Use when |
+| --- | --- | --- |
+| Complex / greenfield / scroll motor / architecture | `cursor-grok-4.6-high` | Default for complex work; first anime.js path, Canvas UI integration, ambiguous UX |
+| Follow-up / polish / light work | `cursor-grok-4.6-medium` | Polish, wiring, bounded tweaks; also when the human says `low` (no `*-low` slug exists) |
+| Ops | `composer-2.5` | Commits, shell, move/copy, mechanical deploy — only these |
+
+**No Extra High / xhigh.** `cursor-grok-4.6-xhigh` and any other `*xhigh*` slug are **forbidden** for this project — even if Cursor lists them.
+
+## Effort shorthand from the human
+
+Bare effort words map to the matching slug above:
+
+| Human says | Task `model` |
+| --- | --- |
+| `high` | `cursor-grok-4.6-high` |
+| `medium` | `cursor-grok-4.6-medium` |
+| `low` | `cursor-grok-4.6-medium` (no `cursor-grok-4.6-low` in Cursor allowlist — do not invent it) |
+| `xhigh` / Extra High | **Refuse.** Tell the human xhigh is forbidden; ask them to pick `high` or `medium`. Do **not** launch with `cursor-grok-4.6-xhigh`. |
+
+Confirm the mapped slug in one short line. Never leave Task `model` empty because they typed a bare effort word.
+
+## Independence from the model picker (blocking)
+
+Subagent Tasks are **totally independent** of whatever is selected (or empty) in the Cursor model picker.
+
+- Every Task **launch and resume** **must** pass an explicit `model` string from the table above.
+- **Never** `inherit`, Auto, default, or omit `model` hoping the picker / parent chat fills it in.
+- An empty or unset picker must **not** change which model a subagent gets.
+- The orchestrator chat may use whatever the human picked for *conversation*; that choice **never** flows into Task `model`.
+
+Refuse launch/resume if `model` is missing, `inherit`, or not in the allowlist. Do not invent a substitute family.
+
+## Cursor allowlist drift (blocking)
+
+Cursor’s live Task allowlist can drift per session (e.g. only `cursor-grok-4.6-xhigh` among 4.6 variants).
+
+1. **Read the live Cursor Task allowlist** for this session before launch.
+2. Take the **intersection** with this project’s allowed table (`high`, `medium`, `composer-2.5`).
+3. If the intersection is **empty** (session only exposes xhigh / 4.7 / 4.5 / Fast / inherit among candidates): **stop and tell the human**. Do **not** substitute `cursor-grok-4.6-xhigh`, `grok-4.7-*`, `cursor-grok-4.5-*`, Fast, or `inherit`.
+
+## If Cursor rejects a slug
+
+Stop and report which slug was rejected. **Do not** fall back to `inherit`, `grok-4.7-*`, `composer-2.5-fast`, `cursor-grok-4.6-xhigh`, or any other family. Prefer `cursor-grok-4.6-high` as the default for complex work when choosing among allowed slugs that are also in the live allowlist.
+
+## Poteto / Gentle conflict (project wins)
+
+If poteto (or Gentle) teaches role `inherit-parent` / `auto` → omit Task `model` so the subagent inherits the parent chat model: **ignore that for this project**. Project overlay wins — always pass an explicit allowlisted slug. Never omit `model` on launch or resume.
+
+## Never
+
+- `inherit` on any Task (writers **and** explorers/reviewers)
+- `composer-2.5-fast`, Fast, Auto/default
+- `cursor-grok-4.6-xhigh` or any `*xhigh*` — even if Cursor only lists xhigh for 4.6 this session
+- Bracket forms as Task `model` (`grok-4.6[effort=…,fast=false]`, `composer-2.5[fast=false]`) — not in Cursor Task allowlist
+- `grok-4.7-*`, `cursor-grok-4.5-*`, gemini, muse — even if listed in the Cursor UI, refuse for this project (Grok **4.6** only + Composer 2.5 ops)
+- Inventing `cursor-grok-4.6-low` or any slug not in the table
+- Putting effort in the prompt (`EFFORT:`) instead of the `model` slug
+- Substituting another family (or xhigh) if the allowlist rejects high/medium — stop and report to the human
+- Relying on parent-chat or picker state for subagent model selection
+- Omitting `model` on resume

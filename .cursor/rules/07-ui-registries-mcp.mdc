@@ -1,0 +1,66 @@
+---
+description: Optional UI kit registries (Magic UI, Aceternity, Skiper) + official MCP usage — additive to core stack.
+alwaysApply: true
+---
+
+# UI registries + official MCPs
+
+Core stack stays **Next.js + anime.js + Canvas UI** (`02-stack.mdc`). Magic UI / Aceternity UI / Skiper UI are **optional additive** kits (effects, sections, uncommon components) — not replacements for the scroll motor or Canvas aesthetic layer.
+
+## Free-only policy (locked)
+
+Use **only free / open registry items** from Magic UI, Aceternity UI, Skiper UI, and Canvas UI.
+
+- **Do not** buy, prompt for, or configure Pro / All-Access / license keys (`SKIPER_LICENSE_KEY`, Aceternity Pro, paid Magic templates, etc.).
+- **Do not** install components marked premium / Pro on the vendor site.
+- Skiper **free** requires **attribution** to Skiper UI; stay free and credit when a Skiper free component ships.
+- Prefer public registry CLI adds. If a CLI add fails with auth/paywall, stop and pick another free item.
+
+## How install actually works (MCP vs deps)
+
+- **MCP** (Magic UI official, or Shadcn for the rest) = discovery for the agent (list / search / read metadata). It does **not** put packages in `node_modules` by itself.
+- **Install path** = `npx shadcn@latest add @namespace/name` which (1) copies component source into the repo and (2) installs whatever **npm dependencies** that registry item declares (e.g. motion, cva). There is usually **no** single mega-package `magicui` / `aceternity` / `skiper` for free items.
+- **anime.js** stays a normal npm dep (already in `package.json`); no MCP.
+- Writers: discover via MCP or docs → `shadcn add` free item → let CLI resolve deps → adapt to typography/story.
+
+## Official MCP map (only these)
+
+| Product | Official MCP? | How agents use it |
+| --- | --- | --- |
+| **Magic UI** | **Yes** — `@magicuidesign/mcp` (Cursor account: Magic UI). Tools: `listRegistryItems`, `searchRegistryItems`, `getRegistryItem`. Docs: https://magicui.design/docs/mcp | Search/get item metadata + source via MCP, then install with shadcn CLI `@magicui/...` |
+| **Aceternity UI** | **No standalone** — official path is **shadcn MCP** + `@aceternity` registry. Docs: https://ui.aceternity.com/docs/cli | Use connected **Shadcn** MCP / `npx shadcn@latest` against `@aceternity/...` |
+| **Skiper UI** | **No standalone** — shadcn-compatible `@skiper-ui` registry. Docs: https://skiper-ui.com/docs/quick-start | Free items via Shadcn MCP / CLI (no license). Skip premium. Attribution required |
+| **Canvas UI** | **Via shadcn MCP** — trusted `@canvas-ui`. Docs: https://canvasui.dev/docs/mcp | Prefer for core aesthetic GPU pieces; Shadcn MCP / CLI `@canvas-ui/...` |
+| **anime.js** | **No official MCP shipped** (proposal/PR only). | Never install third-party anime MCP. Consult official anime.js docs for the installed major |
+
+**Forbidden:** community / third-party MCPs claiming Aceternity, Skiper, anime.js, or “Magic Patterns” as Magic UI. **Solo MCP oficiales.**
+
+## `components.json` registries (this repo)
+
+```json
+"@canvas-ui": "https://canvasui.dev/r/{name}.json",
+"@magicui": "https://magicui.design/r/{name}.json",
+"@aceternity": "https://ui.aceternity.com/registry/{name}.json",
+"@skiper-ui": "https://skiper-ui.com/r/{name}.json"
+```
+
+Install examples (writers, after docs + MCP discover):
+
+- `npx shadcn@latest add @magicui/<name>`
+- `npx shadcn@latest add @aceternity/<name>`
+- `npx shadcn@latest add @skiper-ui/<name>` (free items only; no license)
+- `npx shadcn@latest add @canvas-ui/<name>`
+
+## When to reach for which kit
+
+1. **Scroll / path / timing of the cheese-mouse story** → **anime.js** only (not Framer/Motion from a kit unless the human explicitly okays a one-off).
+2. **GPU / liquid / canvas aesthetic over surfaces** → **Canvas UI** first.
+3. **Landing-style effects already designed in a kit** (marquee, beams, uncommon chrome) → Magic UI MCP or Shadcn+Aceternity/Skiper — **homage microsite**, do not turn the site into a generic kit demo.
+4. Prefer **one kit per surface** over stacking three libraries on the same beat.
+
+## Orchestrator / writer prompts
+
+- Include this rule when the outcome touches kit UI.
+- Writers: discover via **official MCP** (Magic UI or Shadcn) or official docs → then CLI add → adapt to project typography (`05-typography.mdc`) and story tone.
+- Still obey `04-official-docs.mdc` (no Context7).
+- Do not invent registry URLs; use the table above.

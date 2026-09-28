@@ -1,0 +1,24 @@
+---
+description: Labs are intentional; Engram remembers accepted looks; merge into home without rewrite; no roadmap unless asked.
+alwaysApply: true
+---
+
+# Labs, Engram looks, merge
+
+## Labs
+Routes and folders used to rehearse (`app/raton`, `app/x-flame`, mouse prototypes, `components/previews/**`) are **on purpose**. They exist to later merge into home. Do not treat them as accidental drift. Do not pressure cleanup unless the human asks.
+
+## Engram = memory of what already looks right
+This project improvises visually. Engram/Gentle holds what must survive across chats — not a product roadmap.
+
+- Session start: `mem_context` (this repo).
+- When the human likes a look or locks a constraint: `mem_save` (title + what/why/where).
+- Before editing home: read Engram and honor **Do not regress** items.
+- No beat/scene roadmap documents unless the human asks later.
+
+## Merge lab → home
+Ask clarifying questions before merge home / new lab route if ambiguous.
+On “pasalo al home” / “implementalo en el home” / equivalent:
+1. Integrate the approved lab behavior/assets into home.
+2. Do not rewrite the whole splash.
+3. Leave lab routes in place unless told to remove them.

@@ -1,0 +1,48 @@
+---
+description: Organic routing (ODD), optional SDD, and Receipt-Driven review (RDD) for this repo.
+alwaysApply: true
+---
+
+# Routing — ODD, SDD, RDD
+
+## How the human dictates
+They speak outcomes (idea + assets + feeling + constraints), same as brainstorming. You normalize into one **outcome packet** and route. Do not force SDD ceremony.
+
+### Outcome packet
+- **See** — what happens on screen (especially while scrolling)
+- **Assets** — paths or attachments (logo, icon, reference)
+- **Motion split** — anime.js motor vs Canvas UI aesthetic
+- **Scope** — in / out
+- **Done** — observable acceptance (e.g. scroll progress → mouse position; no jank)
+
+Prefer **one fat outcome per iteration** to avoid minor-fix churn.
+
+## ODD — exactly one route per change
+| Route | When | Action |
+| --- | --- | --- |
+| Direct delegation (default for build) | Explore 4+ files, write 2+ non-trivial files, or any new motion/UI slice | One bounded writer Task (+ optional readonly explorer) |
+| Direct inline | Pure orchestration decision only | Stay in chat; if any product file must change → Task |
+| Optional SDD | Human said `use sdd` / accepted a proposal, or durable artifacts cut real ambiguity | You run `/sdd-*`; never silent enroll |
+
+Example — human: “fondo oscuro, este logo, este icono, el ratón camina al scrollear y suelta migas.”
+
+1. Normalize outcome packet  
+2. Route = direct delegation  
+3. Writer `grok-4.6[effort=high,fast=false]` with packet + assets + done  
+4. Optional verify Task  
+5. RDD note below → ops `composer-2.5[fast=false]` only if they asked to commit  
+
+## RDD (Receipt-Driven Development) — not “Research”
+Review follows a finished candidate. After normalize and **before** the repo commit command, follow project task-workflow if present.
+
+**Cursor boundary:** immutable 4R transport is unsupported here. Report `unmanaged` / informational. **Do not invent PASS.** Do not disable RDD to bypass. Do not mix Judgment Day with 4R. Continue under ordinary repository policy.
+
+## SDD Research (optional)
+Evidence lane after `sdd-explore` for external docs — **not** the same as RDD.
+
+## Gentle helpers
+- **Engram** (Gentle-AI / already installed): `mem_context` with this repo’s project key at **every** session start; `mem_save` after durable decisions and doc-derived constraints (`capture_prompt: false` for SDD artifacts)
+- CodeGraph before broad Grep on structural questions  
+- Official canonical docs before implementation (writers; see `04-official-docs.mdc`). No Context7.
+- Honor hook deny/ask/followup  
+- After a work unit, follow the repo commit command when it exists  
