@@ -2,6 +2,10 @@
   "name": "postulacion-cheese-studio",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@12.4.2",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

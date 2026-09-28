@@ -15,6 +15,14 @@ import {
   viewHeight,
   type Pattern,
 } from "./pattern";
+import {
+  DRAW_ANCHOR,
+  alongAt,
+  gateScrollY,
+  listRestAlongs,
+  restMotifTargets,
+} from "./rail-clock";
+import { TrailMouse, type GatePaintState } from "./trail-mouse";
 
 const LEFT_TEXT =
   "Umm, hope your week has started well…I was talking to Cheyene earlier but reception was really bad and I think their going to handle the first part of the project, but I\u2019m not totally sure. Also, I told the team the the new timeline should be ready by Friday, although it\u2019s probably going to slip. There\u2019s been a lot of back and forth and honestly the the whole thing\u2019s been kind of chaotic, like nobody really knows what\u2019s going on so can you check in with them and see if the notes from yesterday\u2019s meeting were sent out, or if they\u2019re still waiting. I think Cheyene mentioned it but didn\u2019t confirm, and now I\u2019m a little lost.";
@@ -37,6 +45,20 @@ const IMPULSE_SCALE = 34;
 const STOP_VELOCITY = 5;
 /** Approximate line height when WheelEvent.deltaMode is DOM_DELTA_LINE. */
 const WHEEL_LINE_PX = 16;
+
+/** Soft wall past an armed rest gate (px). Smaller than edge bounce. */
+const GATE_OVERSCROLL = 12;
+const GATE_STIFFNESS = 90;
+const GATE_DAMPING = 14;
+/**
+ * Accumulated |dy|/SCROLL_HEAVINESS to release (~4–5 deliberate wheel gestures
+ * of ~100px at heaviness 20 → ~5 each).
+ */
+const REST_RELEASE = 22;
+/** Rest-meter exponential decay rate (1/s) with no wheel input. */
+const REST_DECAY = 0.6;
+/** Re-arm a passed gate when scroll rises this far above it (fraction of vh). */
+const REARM_VH = 0.5;
 
 function wheelDeltaYPx(event: WheelEvent): number {
   switch (event.deltaMode) {
@@ -65,12 +87,35 @@ function writeScrollY(y: number): void {
   });
 }
 
+/** Closest path along to a motif-space target (single-tile path). */
+function alongNearest(path: SVGPathElement, target: { x: number; y: number }): number {
+  const total = path.getTotalLength();
+  if (total <= 0) return 0;
+  const samples = 500;
+  let bestU = 0;
+  let bestD = Number.POSITIVE_INFINITY;
+  for (let i = 0; i <= samples; i++) {
+    const u = (i / samples) * total;
+    const p = path.getPointAtLength(u);
+    const d = (p.x - target.x) ** 2 + (p.y - target.y) ** 2;
+    if (d < bestD) {
+      bestD = d;
+      bestU = u;
+    }
+  }
+  return bestU;
+}
+
 export type InfiniteTextTrailProps = {
   pattern?: Pattern;
   text?: string;
   fontSize?: number;
   textOpacity?: number;
   textColor?: string;
+  /** Pixel mouse on the rail with mid-column rest gates. Default off. */
+  mouse?: boolean;
+  /** CSS filter for TrailMouse on light backgrounds. */
+  mouseTint?: string;
 };
 
 function estimatePeriod(text: string, fontSize: number): number {
@@ -83,6 +128,8 @@ export function InfiniteTextTrail({
   fontSize = 15,
   textOpacity = 0.4,
   textColor = "#1A1A1A",
+  mouse = false,
+  mouseTint,
 }: InfiniteTextTrailProps) {
   const tiling = pattern.tiling;
   const rawId = useId().replace(/:/g, "");
@@ -92,6 +139,7 @@ export function InfiniteTextTrail({
   const svgRef = useRef<SVGSVGElement>(null);
   const maskPathRef = useRef<SVGPathElement>(null);
   const measureRef = useRef<SVGTextElement>(null);
+  const samplePathRef = useRef<SVGPathElement>(null);
   const tilesRef = useRef(2);
   const periodRef = useRef(estimatePeriod(text, fontSize));
   const windowRef = useRef({ startOffset: 0, copies: 4 });
@@ -99,12 +147,23 @@ export function InfiniteTextTrail({
   const growingRef = useRef(false);
   const lastScrollYRef = useRef(0);
   const lastGrowthHeightRef = useRef(Number.NaN);
+  const mouseEnabledRef = useRef(mouse);
+
+  const gateRef = useRef<GatePaintState>({ sitting: false, meter: 0 });
+  /** Armed gate scrollY, or null when none / released until re-arm. */
+  const armedGateRef = useRef<number | null>(null);
+  /** Passed gate scrollYs still eligible to re-arm when scrolling up. */
+  const passedGatesRef = useRef<number[]>([]);
+  const baseAlongsRef = useRef<number[]>([]);
+  const tileLenRef = useRef(0);
+  const restMeterRef = useRef(0);
 
   const [tiles, setTiles] = useState(2);
   const [textWindow, setTextWindow] = useState({ startOffset: 0, copies: 4 });
   const [period, setPeriod] = useState(() => estimatePeriod(text, fontSize));
 
   const d = useMemo(() => buildInfinitePath(pattern, tiles), [pattern, tiles]);
+  const sampleD = useMemo(() => buildInfinitePath(pattern, 1), [pattern]);
   const height = viewHeight(pattern, tiles);
   const width = tiling.width;
 
@@ -117,7 +176,70 @@ export function InfiniteTextTrail({
     periodRef.current = period;
     windowRef.current = textWindow;
     tilingRef.current = tiling;
+    mouseEnabledRef.current = mouse;
   });
+
+  const syncBaseAlongs = useCallback(() => {
+    const sample = samplePathRef.current;
+    if (!sample) return;
+    const tileLen = sample.getTotalLength();
+    if (tileLen <= 0) return;
+    tileLenRef.current = tileLen;
+    const targets = restMotifTargets();
+    const alongs = targets.map((t) => alongNearest(sample, t));
+    alongs.sort((a, b) => a - b);
+    baseAlongsRef.current = alongs;
+  }, []);
+
+  const railMetrics = useCallback(() => {
+    const svg = svgRef.current;
+    const t = tilingRef.current;
+    const cw = svg?.clientWidth || t.width;
+    const pitchPx = t.pitch * (cw / t.width);
+    const vh = window.innerHeight || 1;
+    const tileLen = tileLenRef.current;
+    return { pitchPx, vh, tileLen, cw };
+  }, []);
+
+  const refreshArmedGate = useCallback(() => {
+    if (!mouseEnabledRef.current) {
+      armedGateRef.current = null;
+      gateRef.current = { sitting: false, meter: 0 };
+      return;
+    }
+    const { pitchPx, vh, tileLen } = railMetrics();
+    if (pitchPx <= 0 || tileLen <= 0) return;
+
+    const scrollY = window.scrollY;
+    // Sticky only while still approaching / at the soft wall. If scroll climbs
+    // above the gate, drop the arm so the next refresh can pick the right rest.
+    if (armedGateRef.current != null) {
+      if (scrollY < armedGateRef.current - 2) {
+        armedGateRef.current = null;
+      } else if (scrollY <= armedGateRef.current + GATE_OVERSCROLL + 1) {
+        return;
+      } else {
+        // Past soft wall without a release (scrollbar/key) — keep until clamp.
+        return;
+      }
+    }
+
+    const rests = listRestAlongs(
+      baseAlongsRef.current,
+      tilesRef.current,
+      tileLen,
+    );
+    const passed = passedGatesRef.current;
+    let chosen: number | null = null;
+    for (const along of rests) {
+      const g = gateScrollY(along, vh, tileLen, pitchPx);
+      if (g < scrollY - 1) continue;
+      if (passed.some((pg) => Math.abs(pg - g) < 2)) continue;
+      chosen = g;
+      break;
+    }
+    armedGateRef.current = chosen;
+  }, [railMetrics]);
 
   const paint = useCallback(() => {
     const mask = maskPathRef.current;
@@ -129,6 +251,7 @@ export function InfiniteTextTrail({
 
     const tileCount = tilesRef.current;
     const tileLen = total / tileCount;
+    tileLenRef.current = tileLen;
     const t = tilingRef.current;
     const cw = svg.clientWidth || t.width;
     const pitchPx = t.pitch * (cw / t.width);
@@ -138,14 +261,16 @@ export function InfiniteTextTrail({
     const vh = window.innerHeight || 1;
     const drawn = Math.min(
       total,
-      (tileLen * (scrollY + 0.8 * vh)) / pitchPx,
+      alongAt(scrollY, vh, DRAW_ANCHOR, tileLen, pitchPx),
     );
     mask.style.strokeDasharray = `${total}`;
     mask.style.strokeDashoffset = `${total - drawn}`;
 
     const p = Math.max(1, periodRef.current);
     let windowStart =
-      Math.floor(Math.max(0, (tileLen * (scrollY - vh)) / pitchPx) / p) * p;
+      Math.floor(
+        Math.max(0, (tileLen * (scrollY - vh)) / pitchPx) / p,
+      ) * p;
     if (windowStart >= total) {
       windowStart = Math.max(0, Math.floor((total - p) / p) * p);
     }
@@ -172,8 +297,9 @@ export function InfiniteTextTrail({
   }, [text, fontSize]);
 
   useLayoutEffect(() => {
+    syncBaseAlongs();
     paint();
-  }, [d, tiles, period, paint]);
+  }, [d, tiles, period, paint, syncBaseAlongs, sampleD]);
 
   useLayoutEffect(() => {
     const root = document.documentElement;
@@ -192,6 +318,12 @@ export function InfiniteTextTrail({
     let position = window.scrollY;
     let rafId: number | null = null;
     let lastTs: number | null = null;
+    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let reduce = reduceMq.matches;
+    const onReduceChange = () => {
+      reduce = reduceMq.matches;
+    };
+    reduceMq.addEventListener("change", onReduceChange);
 
     const stopLoop = () => {
       if (rafId != null) {
@@ -213,7 +345,46 @@ export function InfiniteTextTrail({
       }
 
       const max = maxScrollY();
+      const gate = armedGateRef.current;
+      const gated = mouseEnabledRef.current && gate != null;
+
+      // Decay rest meter when not being filled this frame (wheel fills in onWheel).
+      if (gated && position >= gate - 1) {
+        restMeterRef.current *= Math.exp(-REST_DECAY * dt);
+        if (restMeterRef.current < 1e-3) restMeterRef.current = 0;
+      }
+
       position += velocity * dt;
+
+      if (gated) {
+        const ceil = gate + GATE_OVERSCROLL;
+        if (position > ceil) {
+          position = ceil;
+          if (velocity > 0) velocity = 0;
+        }
+        if (position >= gate - 0.5) {
+          const over = Math.max(0, position - gate);
+          if (reduce) {
+            position = gate;
+            if (velocity > 0) velocity = 0;
+          } else if (over > 0) {
+            velocity +=
+              (-GATE_STIFFNESS * over - GATE_DAMPING * velocity) * dt;
+          }
+          // Pinned: sitting at the soft wall.
+          gateRef.current = {
+            sitting: true,
+            meter: Math.min(1, restMeterRef.current / REST_RELEASE),
+          };
+        } else {
+          gateRef.current = {
+            sitting: false,
+            meter: Math.min(1, restMeterRef.current / REST_RELEASE),
+          };
+        }
+      } else {
+        gateRef.current = { sitting: false, meter: 0 };
+      }
 
       if (position < -MAX_OVERSCROLL) {
         position = -MAX_OVERSCROLL;
@@ -226,18 +397,21 @@ export function InfiniteTextTrail({
       if (position < 0) {
         velocity +=
           (-BOUNCE_STIFFNESS * position - BOUNCE_DAMPING * velocity) * dt;
-      } else if (position > max) {
+      } else if (position > max && !(gated && gate != null && position <= gate + GATE_OVERSCROLL)) {
         const over = position - max;
         velocity +=
           (-BOUNCE_STIFFNESS * over - BOUNCE_DAMPING * velocity) * dt;
-      } else {
+      } else if (!gated || position <= (gate ?? 0)) {
         velocity *= Math.exp(-FRICTION * dt);
       }
 
       writeScrollY(position);
 
       // Keep integrating while virtually overscrolled so the soft edge kiss can land.
-      const overscrolled = position < 0 || position > max;
+      const overscrolled =
+        position < 0 ||
+        position > max ||
+        (gated && gate != null && position > gate);
       if (Math.abs(velocity) < STOP_VELOCITY && !overscrolled) {
         // Rest flush on the edge after a quiet kiss (avoid a leftover few-px nudge).
         if (position < 16) position = 0;
@@ -258,6 +432,14 @@ export function InfiniteTextTrail({
       rafId = requestAnimationFrame(tick);
     };
 
+    const releaseGate = (gate: number) => {
+      passedGatesRef.current.push(gate);
+      armedGateRef.current = null;
+      restMeterRef.current = 0;
+      gateRef.current = { sitting: false, meter: 0 };
+      refreshArmedGate();
+    };
+
     const onWheel = (event: WheelEvent) => {
       // Let browser zoom (ctrl/meta + wheel) alone.
       if (event.ctrlKey || event.metaKey) return;
@@ -270,6 +452,27 @@ export function InfiniteTextTrail({
       }
 
       const max = maxScrollY();
+      const gate = armedGateRef.current;
+      const gated = mouseEnabledRef.current && gate != null;
+      const atGate = gated && position >= gate - 0.5;
+
+      // Upward always free. Downward at gate fills rest meter instead of velocity.
+      if (atGate && dy > 0) {
+        const impulse = dy / SCROLL_HEAVINESS;
+        restMeterRef.current += Math.abs(impulse);
+        gateRef.current = {
+          sitting: true,
+          meter: Math.min(1, restMeterRef.current / REST_RELEASE),
+        };
+        if (restMeterRef.current >= REST_RELEASE) {
+          releaseGate(gate);
+          // Small nudge past the wall so we do not immediately re-pin.
+          velocity += impulse * IMPULSE_SCALE * 0.35;
+          startLoop();
+        }
+        return;
+      }
+
       let impulse = dy / SCROLL_HEAVINESS;
       // Soften further pushes while already overscrolled (rubber-band feel).
       if ((position <= 0 && impulse < 0) || (position >= max && impulse > 0)) {
@@ -279,6 +482,11 @@ export function InfiniteTextTrail({
         impulse *= Math.max(0, 1 - t) * 0.55;
       }
 
+      // Approaching an armed gate: zero downward velocity on contact.
+      if (gated && impulse > 0 && position >= gate - 1 && position < gate) {
+        if (velocity > 0) velocity = 0;
+      }
+
       velocity += impulse * IMPULSE_SCALE;
       startLoop();
     };
@@ -286,12 +494,16 @@ export function InfiniteTextTrail({
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       window.removeEventListener("wheel", onWheel);
+      reduceMq.removeEventListener("change", onReduceChange);
       stopLoop();
     };
-  }, []);
+  }, [refreshArmedGate]);
 
   useLayoutEffect(() => {
     lastScrollYRef.current = window.scrollY;
+    syncBaseAlongs();
+    refreshArmedGate();
+
     const onScroll = () => {
       const scrollY = window.scrollY;
       const dy = scrollY - lastScrollYRef.current;
@@ -299,6 +511,40 @@ export function InfiniteTextTrail({
       paint();
 
       const vh = window.innerHeight || 1;
+      const rearmPx = REARM_VH * vh;
+
+      // Re-arm passed gates when scrolling back above them.
+      if (mouseEnabledRef.current && dy < 0) {
+        const still: number[] = [];
+        for (const g of passedGatesRef.current) {
+          if (scrollY < g - rearmPx) {
+            // Cleared well above: drop from passed so refresh can arm again.
+            continue;
+          }
+          still.push(g);
+        }
+        passedGatesRef.current = still;
+      }
+
+      // Safety clamp: non-wheel jump past an armed gate.
+      const gate = armedGateRef.current;
+      if (
+        mouseEnabledRef.current &&
+        gate != null &&
+        scrollY > gate + GATE_OVERSCROLL + 2
+      ) {
+        window.scrollTo({ top: gate, left: 0, behavior: "instant" });
+        lastScrollYRef.current = gate;
+        gateRef.current = {
+          sitting: true,
+          meter: Math.min(1, restMeterRef.current / REST_RELEASE),
+        };
+        paint();
+        return;
+      }
+
+      refreshArmedGate();
+
       const remaining =
         document.documentElement.scrollHeight - scrollY - vh;
       const scrolledDown = dy > 0;
@@ -327,7 +573,7 @@ export function InfiniteTextTrail({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [paint]);
+  }, [paint, refreshArmedGate, syncBaseAlongs]);
 
   const maskPad = fontSize * 2.2;
 
@@ -348,6 +594,12 @@ export function InfiniteTextTrail({
       >
         <defs>
           <path id={trailId} d={d} fill="none" />
+          <path
+            ref={samplePathRef}
+            d={sampleD}
+            fill="none"
+            aria-hidden
+          />
           <mask
             id={maskId}
             maskUnits="userSpaceOnUse"
@@ -394,6 +646,16 @@ export function InfiniteTextTrail({
           </textPath>
         </text>
       </svg>
+      {mouse ? (
+        <TrailMouse
+          svgRef={svgRef}
+          pattern={pattern}
+          fontSize={fontSize}
+          gateRef={gateRef}
+          tiles={tiles}
+          mouseTint={mouseTint}
+        />
+      ) : null}
     </div>
   );
 }

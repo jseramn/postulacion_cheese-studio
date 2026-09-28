@@ -2,6 +2,8 @@
 
 Interactive storytelling microsite.
 
+Active handoff (read before editing `/wispr-infinito`): [`.cursor/CONTINUE.md`](.cursor/CONTINUE.md).
+
 ## Stack
 - Next.js (App Router)
 - anime.js — scroll / interaction motor
@@ -52,3 +54,13 @@ Work only in this repo directory. Never `/tmp`. See `.cursor/rules/12-next-app.m
 Organic (ODD) by default. SDD only on request or accepted proposal. On Cursor, RDD 4R is unmanaged — never invent PASS.
 
 Detailed rules live in `.cursor/rules/*.mdc` (version-controlled project rules).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

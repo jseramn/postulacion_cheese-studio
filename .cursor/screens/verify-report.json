@@ -1,0 +1,22 @@
+{
+  "sit": true,
+  "freezeOk": true,
+  "releaseOk": true,
+  "rearmOk": true,
+  "cascadeCount": 0,
+  "screens": [
+    "01-right-column.png",
+    "02-crossing.png",
+    "03-no-sit-yet.png",
+    "03-sitting-gate.png",
+    "04-after-release.png",
+    "05-rearmed-gate.png"
+  ],
+  "final": {
+    "sitting": true,
+    "src": "/mouse/frames/pose-sit.png?v=uniform",
+    "scrollY": 563,
+    "x": 1058.74462890625,
+    "y": 113.83984375
+  }
+}

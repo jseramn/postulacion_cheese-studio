@@ -9,6 +9,7 @@ export default function WisprInfinitoPage() {
         fontSize={34}
         textColor="#1A1A1A"
         textOpacity={1}
+        mouse
       />
     </div>
   );
