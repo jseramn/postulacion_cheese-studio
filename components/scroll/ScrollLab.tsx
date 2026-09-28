@@ -258,7 +258,12 @@ export function ScrollLab() {
         const cheeseRest =
           restIndexFromAlong(clamped, cheeseAlongRef.current, REST_ALONG_GAP) !=
           null;
-        const applyClear = walking || (rotateDeg === 0 && !cheeseRest);
+        // Walking: paws land flush on the rail (the transform-origin already
+        // pins the wrap to the paw). The sprite rotates with the rail tangent
+        // so its body sits above the stroke in every curvature.
+        // Sit: nudge the body half a glyph off the rail so the silhouette
+        // does not paint over the glyph caps.
+        const applyClear = !walking && (rotateDeg === 0 || cheeseRest);
         const verticalRail = Math.abs(Math.sin(rad)) >= Math.abs(Math.cos(rad));
         const absSin = Math.abs(Math.sin(rad));
         const absCos = Math.abs(Math.cos(rad));
