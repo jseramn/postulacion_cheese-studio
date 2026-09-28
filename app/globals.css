@@ -50,4 +50,18 @@
     background: #12151c;
     color: #ebe4d4;
   }
+
+  html.dark {
+    background: #f4f1ea;
+    color: #12151c;
+  }
+
+  html.dark body {
+    background: #f4f1ea;
+    color: #12151c;
+  }
+}
+  ::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }
