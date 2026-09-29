@@ -258,8 +258,12 @@ export function ScrollLab() {
         const cheeseRest =
           restIndexFromAlong(clamped, cheeseAlongRef.current, REST_ALONG_GAP) !=
           null;
-        const applyClear = walking || (rotateDeg === 0 && !cheeseRest);
-        const verticalRail = Math.abs(Math.sin(rad)) >= Math.abs(Math.cos(rad));
+        // Walking: paws land flush on the rail (the transform-origin already
+        // pins the wrap to the paw). The sprite rotates with the rail tangent
+        // so its body sits above the stroke in every curvature.
+        // Sit: nudge the body half a glyph off the rail so the silhouette
+        // does not paint over the glyph caps.
+        const applyClear = !walking && (rotateDeg === 0 || cheeseRest);
         const absSin = Math.abs(Math.sin(rad));
         const absCos = Math.abs(Math.cos(rad));
         const verticalness = absSin + absCos > 0 ? absSin / (absSin + absCos) : 0;
@@ -284,37 +288,24 @@ export function ScrollLab() {
           lastClearSign = nSign;
         }
         // Offset is always a signed rail-normal * cssClear (never bx/by).
-        let ox = applyClear ? nSign * nx * cssClear : 0;
-        let oy = applyClear ? nSign * ny * cssClear : 0;
-        // Down: scaleY(-1) on the parent wrap (flip across the path / local X).
-        // CSS applies right-to-left: scaleY, then rotate (heading), then translate (foot).
-        // Curve +180 heading inverts local body onto the glyphs; parent scaleY(-1)
-        // around the foot restores the down-walk hang. Toggle remains vertical-only.
-        // Sit/rest (rotateDeg === 0): never invent scaleY. Do not invert with child setFacing.
-        const headingFlipped = Math.abs(rotateDeg - tangentDeg) > 90;
-        let parentScaleY = walking && (verticalRail ? lastDir >= 0 : headingFlipped);
-        const applyMouseTransform = () => {
-          mouseWrap.style.transform = parentScaleY
-            ? `translate(${x + ox}px, ${y + oy}px) rotate(${rotateDeg}deg) scaleY(-1)`
-            : `translate(${x + ox}px, ${y + oy}px) rotate(${rotateDeg}deg)`;
-        };
-        applyMouseTransform();
-        const letterHalf = letterPx / 2;
-        const wrapMeasure = mouseWrap.getBoundingClientRect();
-        const xInside = Math.min(
-          screen.x - wrapMeasure.left,
-          wrapMeasure.right - screen.x,
-        );
-        const yInside = Math.min(
-          screen.y - wrapMeasure.top,
-          wrapMeasure.bottom - screen.y,
-        );
-        const glyphHit = xInside >= -letterHalf && yInside >= -letterHalf;
-        // Sit/rest uses rotateDeg === 0 (walking=false); do not invent scaleY there.
-        if (walking && verticalRail && glyphHit && Math.max(xInside, yInside) > 40) {
-          parentScaleY = !parentScaleY;
-          applyMouseTransform();
+        // Walking keeps ox/oy = 0 so paws stay flush on the rail.
+        const ox = applyClear ? nSign * nx * cssClear : 0;
+        const oy = applyClear ? nSign * ny * cssClear : 0;
+        // MDN transform: functions apply right-to-left in parent space;
+        // rotate() is a rigid turn about transform-origin (the paw).
+        // After rotate(θ), local body from the foot is (sin θ, −cos θ)
+        // in CSS Y-down. Point that vector at the viewport center.
+        // Sit / rotateDeg === 0 / walking === false: never invent a flip.
+        let paintDeg = rotateDeg;
+        if (walking) {
+          const theta = (rotateDeg * Math.PI) / 180;
+          const bodyX = Math.sin(theta);
+          const bodyY = -Math.cos(theta);
+          if (bodyX * cX + bodyY * cY < 0) {
+            paintDeg = rotateDeg + 180;
+          }
         }
+        mouseWrap.style.transform = `translate(${x + ox}px, ${y + oy}px) rotate(${paintDeg}deg)`;
         return {
           along,
           x: svgPoint.x,
