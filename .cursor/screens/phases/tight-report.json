@@ -1,0 +1,25 @@
+{
+  "shots": {},
+  "verdict": {
+    "bBankParallel": false,
+    "bSoleOnInk": false,
+    "aHasTopRightL": false,
+    "aNotCornerHole": false,
+    "aNudgeTowardRailOnly": true,
+    "aNudgeMag": 99
+  },
+  "files": {
+    "a": "phases/tight-a.png",
+    "b": "phases/tight-b.png"
+  },
+  "pixel": {},
+  "fix": {
+    "COLUMN_PAD": 2,
+    "SWEEP_BLOOM": 0,
+    "FOOT_GAP": 4,
+    "SOLE_EXTENT": 6,
+    "VERTICAL_FACE": 0.72,
+    "alongN_column": 12,
+    "softNudge": "toward-rail n only; no axis residual"
+  }
+}

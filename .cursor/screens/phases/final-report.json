@@ -1,0 +1,114 @@
+{
+  "pathLengths": {
+    "maskLen": 7567.7607421875,
+    "textLen": 7567.76025390625,
+    "equal": true
+  },
+  "midLetter": {
+    "measurable": true,
+    "upright": true,
+    "mostlyUpright": true,
+    "uprightCount": 31,
+    "invertedCount": 0,
+    "rot": -3.502686023712158,
+    "sample": {
+      "i": 120,
+      "rot": -3.502686023712158,
+      "d": 1294.686289367266,
+      "kind": "up",
+      "x": 632.1198120117188,
+      "y": 364.8917541503906
+    }
+  },
+  "midGlyphsUpright": true,
+  "shots": {
+    "top": {
+      "scrollY": 8,
+      "transform": "translate(695.146px, 144.052px) rotate(0.6979deg)",
+      "bank": "0.70,0.012,-1.000,right",
+      "rotate": 0.7,
+      "nx": 0.012,
+      "ny": -1,
+      "facing": "right",
+      "sitting": false,
+      "box": {
+        "l": 638.5,
+        "t": 15.5,
+        "r": 788.1,
+        "b": 146.3,
+        "cx": 713.3,
+        "cy": 80.9
+      }
+    },
+    "mid": {
+      "scrollY": 971,
+      "transform": "translate(983.292px, 1303.73px) rotate(-1.49343deg)",
+      "bank": "-1.49,-0.026,-1.000,left",
+      "rotate": -1.49,
+      "nx": -0.026,
+      "ny": -1,
+      "facing": "left",
+      "sitting": false,
+      "box": {
+        "l": 923.7,
+        "t": 210.5,
+        "r": 1075,
+        "b": 343.4,
+        "cx": 999.3,
+        "cy": 276.9
+      }
+    },
+    "right": {
+      "scrollY": 555,
+      "transform": "translate(1126.15px, 747.488px) rotate(-90deg)",
+      "bank": "-90.00,-1.000,0.000,right",
+      "rotate": -90,
+      "nx": -1,
+      "ny": 0,
+      "facing": "right",
+      "sitting": false,
+      "box": {
+        "l": 1006.3,
+        "t": 101,
+        "r": 1135.3,
+        "b": 249,
+        "cx": 1070.8,
+        "cy": 175
+      }
+    },
+    "left": {
+      "scrollY": 1507,
+      "transform": "translate(185.366px, 1524.57px) rotate(90deg)",
+      "bank": "90.00,1.000,0.000,left",
+      "rotate": 90,
+      "nx": 1,
+      "ny": 0,
+      "facing": "left",
+      "sitting": false,
+      "box": {
+        "l": 176.2,
+        "t": -39,
+        "r": 305.2,
+        "b": 109,
+        "cx": 240.7,
+        "cy": 35
+      }
+    },
+    "sit": {
+      "scrollY": 565,
+      "sitting": true,
+      "rotate": 0,
+      "bank": "0.00,-1.000,0.000,right",
+      "rotateNearZero": true
+    }
+  },
+  "rightColumnOk": true,
+  "files": {
+    "top": "phases/final-02-top.png",
+    "mid": "phases/final-05-mid.png",
+    "right": "phases/final-03-right.png",
+    "left": "phases/final-06-left.png",
+    "sit": "phases/final-sit.png"
+  },
+  "approach": "true-right via |nx|≈1+|ny|<0.2+mid-viewport; text-only isRtlFlat×3+control band; mouse sample unchanged"
+}

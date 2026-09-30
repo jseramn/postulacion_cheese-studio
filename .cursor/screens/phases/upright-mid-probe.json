@@ -1,0 +1,18 @@
+{
+  "mid": {
+    "y": 1059,
+    "bank": "-2.97,-0.052,-0.999,left",
+    "sit": "0",
+    "cx": 826.4096374511719,
+    "cy": 193.51837158203125,
+    "t": "translate(811.832px, 1308.69px) rotate(-2.97033deg)",
+    "op": "1"
+  },
+  "letters": {
+    "ok": true,
+    "upright": 0,
+    "inverted": 0,
+    "samples": [],
+    "trailOp": "1"
+  }
+}

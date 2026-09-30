@@ -1,0 +1,83 @@
+[
+  {
+    "name": "orient-03-right",
+    "y": 555,
+    "bank": "90.00,-1.000,0.000,left",
+    "sit": "0",
+    "nudge": "0.0,0.0",
+    "rot": 90,
+    "nx": -1,
+    "ny": 0,
+    "face": "left",
+    "box": {
+      "l": 1002.3,
+      "t": 141.6,
+      "r": 1131.3,
+      "b": 289.6
+    },
+    "transform": "translate(1122.15px, 753.164px) rotate(90deg) scaleY(-1)",
+    "scaleY": true,
+    "metrics": {
+      "topW": 15.3,
+      "botW": 1.8,
+      "headEdge": "top",
+      "leftExtremeYRel": 0.271,
+      "silH": 88
+    },
+    "crop": ".cursor\\screens\\phases\\orient-03-right.png"
+  },
+  {
+    "name": "orient-mid",
+    "y": 1005,
+    "bank": "-2.20,-0.038,-0.999,left",
+    "sit": "0",
+    "nudge": "0.0,0.0",
+    "rot": -2.2,
+    "nx": -0.038,
+    "ny": -0.999,
+    "face": "left",
+    "box": {
+      "l": 852.7,
+      "t": 204.3,
+      "r": 1005.5,
+      "b": 338.9
+    },
+    "transform": "translate(913.759px, 1332.56px) rotate(-2.20367deg)",
+    "scaleY": false,
+    "metrics": {
+      "topW": 21.3,
+      "botW": 52,
+      "headEdge": "bottom",
+      "leftExtremeYRel": 0.393,
+      "silH": 62
+    },
+    "crop": ".cursor\\screens\\phases\\orient-mid.png"
+  },
+  {
+    "name": "orient-06-left",
+    "y": 1500,
+    "bank": "270.00,1.000,0.000,right",
+    "sit": "0",
+    "nudge": "0.0,87.0",
+    "rot": 270,
+    "nx": 1,
+    "ny": 0,
+    "face": "right",
+    "box": {
+      "l": 180.2,
+      "t": 14.4,
+      "r": 309.2,
+      "b": 162.4
+    },
+    "transform": "translate(189.366px, 1605.9px) rotate(270deg) scaleY(-1)",
+    "scaleY": true,
+    "metrics": {
+      "topW": 9.4,
+      "botW": 1.8,
+      "headEdge": "top",
+      "leftExtremeYRel": 0.536,
+      "silH": 90
+    },
+    "crop": ".cursor\\screens\\phases\\orient-06-left.png"
+  }
+]

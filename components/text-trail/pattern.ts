@@ -162,6 +162,22 @@ function mapMotif(motif: Motif, xf: (p: Point) => Point): Motif {
   };
 }
 
+/**
+ * True only for a long horizontal R→L flat (mid cross).
+ * Quarters alone are not reversed — triad reverse crushed corner glyphs.
+ */
+function isRtlFlat(from: Point, seg: Segment): boolean {
+  const dx = seg.end.x - from.x;
+  const dy = seg.end.y - from.y;
+  // Mid flat: |dx|≫|dy|. Quarters fail |dx| > 3|dy|.
+  if (!(dx < 0 && Math.abs(dx) > Math.abs(dy) * 3)) return false;
+  const midY = (from.y + seg.end.y) / 2;
+  const band = Math.max(24, Math.abs(dy) * 2 + 8);
+  return (
+    Math.abs(seg.c1.y - midY) <= band && Math.abs(seg.c2.y - midY) <= band
+  );
+}
+
 /** Concatenate tiles. EDGE_PATTERN ends meet the next start exactly (gap 0). */
 export function buildInfinitePath(pattern: Pattern, tiles: number): string {
   const count = Math.max(0, Math.floor(tiles));
@@ -175,6 +191,86 @@ export function buildInfinitePath(pattern: Pattern, tiles: number): string {
       d = `M${fmt(tile.start.x)} ${fmt(tile.start.y)}`;
     }
     for (const s of tile.segments) d = appendCubic(d, s.c1, s.c2, s.end);
+  }
+  return d;
+}
+
+/**
+ * Length epsilon (user units) on a column vertical if a mid splice drifts
+ * vs the mask. Never applied on the mid flat.
+ */
+const TEXT_MID_LENGTH_EPS = 0;
+
+/**
+ * Text-only path. Mid R→L flat is visited L→R so glyphs stay viewer-upright.
+ * Reverse only the exit quarter + flat (D→C→B) — not the entry quarter back
+ * to A. Returning to A co-located textPath offsets with the right-column end
+ * and crushed STAC/ER at the corner. `M` only at D (left column vertical),
+ * never at B/C flat ends. Mouse / mask keep {@link buildInfinitePath}.
+ *
+ * Docs: MDN SVG `d` (M vs C); MDN textPath (side is Firefox-only — unused).
+ */
+export function buildInfiniteTextPath(pattern: Pattern, tiles: number): string {
+  const count = Math.max(0, Math.floor(tiles));
+  if (count === 0 || pattern.motif.segments.length === 0) return "";
+
+  const { motif, tiling } = pattern;
+  let d = "";
+  let verticalShorten = TEXT_MID_LENGTH_EPS;
+
+  for (let i = 0; i < count; i++) {
+    const tile = mapMotif(motif, tileTransform(tiling, i));
+    let cursor = tile.start;
+    if (i === 0) {
+      d = `M${fmt(tile.start.x)} ${fmt(tile.start.y)}`;
+    }
+    const segs = tile.segments;
+    for (let j = 0; j < segs.length; j++) {
+      const entry = segs[j];
+      const flat = segs[j + 1];
+      const exit = segs[j + 2];
+
+      if (flat && exit && isRtlFlat(entry.end, flat)) {
+        const B = entry.end;
+        const C = flat.end;
+        const D = exit.end;
+
+        // Skip forward entry (A→B): right column already ends at A.
+        // L→R mid: D→C→B only — stop at B (no B→A return pile).
+        d += `M${fmt(D.x)} ${fmt(D.y)}`;
+        d = appendCubic(d, exit.c2, exit.c1, C);
+        d = appendCubic(d, flat.c2, flat.c1, B);
+        d += `M${fmt(D.x)} ${fmt(D.y)}`;
+
+        verticalShorten = TEXT_MID_LENGTH_EPS;
+        cursor = D;
+        j += 2;
+        continue;
+      }
+
+      let end = entry.end;
+      let c1 = entry.c1;
+      let c2 = entry.c2;
+      if (
+        verticalShorten > 0 &&
+        Math.abs(cursor.x - end.x) < 0.5 &&
+        end.y > cursor.y
+      ) {
+        const dy = end.y - cursor.y;
+        const cut = Math.min(verticalShorten, Math.max(0, dy - 1));
+        if (cut > 0) {
+          end = rp({ x: end.x, y: end.y - cut });
+          c1 = rp({ x: cursor.x, y: cursor.y + (end.y - cursor.y) / 3 });
+          c2 = rp({
+            x: cursor.x,
+            y: cursor.y + (2 * (end.y - cursor.y)) / 3,
+          });
+          verticalShorten = 0;
+        }
+      }
+      d = appendCubic(d, c1, c2, end);
+      cursor = end;
+    }
   }
   return d;
 }

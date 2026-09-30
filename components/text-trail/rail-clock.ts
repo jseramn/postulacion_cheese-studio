@@ -3,12 +3,15 @@ import { EDGE_RAIL } from "./pattern";
 
 /** Mask reveal anchor (trail tip). Keep paint() on this value. */
 export const DRAW_ANCHOR = 0.8;
-/** Mouse sits on letters already revealed; center of the viewport. */
-export const MOUSE_ANCHOR = 0.5;
+/**
+ * Mouse rail-clock fraction of the viewport (scrollY + anchor·vh).
+ * Was 0.5 (mid-right at load). 0.08 = top-left entry; behind DRAW_ANCHOR 0.8.
+ */
+export const MOUSE_ANCHOR = 0.08;
 
 /**
  * Path-length along the rail from page scroll.
- * Shared by mask dash (anchor 0.8) and mouse (anchor 0.5).
+ * Shared by mask dash (DRAW_ANCHOR) and mouse (MOUSE_ANCHOR).
  */
 export function alongAt(
   scrollY: number,
@@ -19,6 +22,42 @@ export function alongAt(
 ): number {
   if (pitchPx <= 0 || tileLen <= 0) return 0;
   return (tileLen * (scrollY + anchor * vh)) / pitchPx;
+}
+
+/**
+ * Keep CSS bank angle from putting the sprite head screen-down.
+ * Same idea as ScrollLab: when cos(θ) is badly negative, add 180° (no scaleY).
+ */
+export function uprightAngle(deg: number): number {
+  const rad = (deg * Math.PI) / 180;
+  // Keep lateral/bend banks (±90-ish); only un-invert near screen-up/down.
+  if (Math.abs(Math.sin(rad)) > 0.55) return deg;
+  if (Math.cos(rad) >= -0.05) return deg;
+  return deg + 180;
+}
+
+/**
+ * Soft screen-containment nudge budget (px). Larger overflowFix deltas
+ * glue the mouse to bezels and break rail composition — skip those.
+ * Composition > clamp (brief off-screen on flats OK).
+ */
+export const MAX_SOFT_NUDGE = 40;
+
+/** Translate delta so a screen AABB sits inside the inset frame. */
+export function overflowFix(
+  box: { left: number; top: number; right: number; bottom: number },
+  vw: number,
+  vh: number,
+  inset: number,
+): { x: number; y: number } {
+  let x = 0;
+  let y = 0;
+  // ceil so subpixel tops like 7.2 still clear an integer inset of 8
+  if (box.left < inset) x += Math.ceil(inset - box.left);
+  if (box.right > vw - inset) x -= Math.ceil(box.right - (vw - inset));
+  if (box.top < inset) y += Math.ceil(inset - box.top);
+  if (box.bottom > vh - inset) y -= Math.ceil(box.bottom - (vh - inset));
+  return { x, y };
 }
 
 /** Inverse of alongAt: scrollY that places `along` at the given anchor. */

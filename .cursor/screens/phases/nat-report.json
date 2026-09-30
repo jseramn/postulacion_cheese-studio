@@ -1,0 +1,133 @@
+{
+  "report": [
+    {
+      "name": "nat-02-top",
+      "file": ".cursor\\screens\\phases\\nat-02-top.png",
+      "y": 201,
+      "bank": "0.13,0.002,-1.000,right",
+      "sit": "0",
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "nudgeSkipped": "188.0",
+      "rot": 0.13,
+      "nx": 0.002,
+      "ny": -1,
+      "face": "right",
+      "box": {
+        "l": 1005.1,
+        "t": -173.1,
+        "r": 1153.4,
+        "b": -43.7,
+        "w": 148.3,
+        "h": 129.3
+      },
+      "margins": {
+        "L": 1005.1,
+        "T": -173.1,
+        "R": 126.6,
+        "B": 843.7
+      },
+      "transform": "translate(1061.7px, 147.9px) rotate(0.125238deg)",
+      "scaleY": false,
+      "vw": 1280,
+      "vh": 800
+    },
+    {
+      "name": "nat-03-right",
+      "file": ".cursor\\screens\\phases\\nat-03-right.png",
+      "y": 555,
+      "bank": "-90.00,-1.000,0.000,right",
+      "sit": "0",
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "nudgeSkipped": "",
+      "rot": -90,
+      "nx": -1,
+      "ny": 0,
+      "face": "right",
+      "box": {
+        "l": 1006.3,
+        "t": 106.7,
+        "r": 1135.3,
+        "b": 254.7,
+        "w": 129,
+        "h": 148
+      },
+      "margins": {
+        "L": 1006.3,
+        "T": 106.7,
+        "R": 144.7,
+        "B": 545.3
+      },
+      "transform": "translate(1126.15px, 753.164px) rotate(-90deg)",
+      "scaleY": false,
+      "vw": 1280,
+      "vh": 800
+    },
+    {
+      "name": "nat-05-mid",
+      "file": ".cursor\\screens\\phases\\nat-05-mid.png",
+      "y": 1005,
+      "bank": "357.80,0.038,0.999,left",
+      "sit": "0",
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "nudgeSkipped": "",
+      "rot": 357.8,
+      "nx": 0.038,
+      "ny": 0.999,
+      "face": "left",
+      "box": {
+        "l": 855.3,
+        "t": 274,
+        "r": 1008.2,
+        "b": 408.6,
+        "w": 152.9,
+        "h": 134.6
+      },
+      "margins": {
+        "L": 855.3,
+        "T": 274,
+        "R": 271.8,
+        "B": 391.4
+      },
+      "transform": "translate(916.44px, 1402.25px) rotate(357.796deg)",
+      "scaleY": false,
+      "vw": 1280,
+      "vh": 800
+    },
+    {
+      "name": "nat-06-left",
+      "file": ".cursor\\screens\\phases\\nat-06-left.png",
+      "y": 1500,
+      "bank": "90.00,1.000,0.000,left",
+      "sit": "0",
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "nudgeSkipped": "52.0",
+      "rot": 90,
+      "nx": 1,
+      "ny": 0,
+      "face": "left",
+      "box": {
+        "l": 176.2,
+        "t": -37.6,
+        "r": 305.2,
+        "b": 110.4,
+        "w": 129,
+        "h": 148
+      },
+      "margins": {
+        "L": 176.2,
+        "T": -37.6,
+        "R": 974.8,
+        "B": 689.6
+      },
+      "transform": "translate(185.366px, 1518.9px) rotate(90deg)",
+      "scaleY": false,
+      "vw": 1280,
+      "vh": 800
+    }
+  ],
+  "note": "soft nudge capped at MAX_SOFT_NUDGE=40; scaleY removed; mid glyph-up bias"
+}

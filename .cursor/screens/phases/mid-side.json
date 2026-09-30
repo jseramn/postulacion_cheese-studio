@@ -1,0 +1,53 @@
+{
+  "scrollY": 942,
+  "bank": "359.14,0.015,1.000,left",
+  "rotate": 359.14,
+  "nx": 0.015,
+  "ny": 1,
+  "facing": "left",
+  "mouseCenterY": 399.40435791015625,
+  "mouseCenterX": 1054.8353271484375,
+  "soleY": 465.00146484375,
+  "mouseBox": {
+    "l": 979.8809814453125,
+    "t": 333.8072509765625,
+    "r": 1129.7896728515625,
+    "b": 465.00146484375,
+    "cx": 1054.8353271484375,
+    "cy": 399.40435791015625
+  },
+  "inkCentroidY": 416.1165254237287,
+  "ink": {
+    "x": 1060.2248789346247,
+    "y": 416.1165254237287,
+    "pixels": 3304,
+    "method": "pixel"
+  },
+  "mouseAboveLetters": true,
+  "soleAboveInkCentroid": false,
+  "sidewalkRead": true,
+  "nudge": "0.0,0.0",
+  "nudgeSkipped": "",
+  "transform": "translate(1038.19px, 1397px) rotate(359.145deg)",
+  "asciiSweep": [
+    {
+      "w": 150,
+      "h": 131,
+      "cw": 0,
+      "ch": 0
+    },
+    {
+      "w": 150,
+      "h": 131,
+      "cw": 0,
+      "ch": 0
+    },
+    {
+      "w": 148,
+      "h": 129,
+      "cw": 148,
+      "ch": 129
+    }
+  ],
+  "screenshot": "phases/mid-side.png"
+}

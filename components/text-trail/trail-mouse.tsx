@@ -8,7 +8,10 @@ import {
   type RefObject,
 } from "react";
 
-import { MouseSprite, pathFootStyle } from "@/components/mouse/sprite/MouseSprite";
+import {
+  MouseSprite,
+  pathFootStyle,
+} from "@/components/mouse/sprite/MouseSprite";
 import { poseFrames } from "@/components/mouse/sprite/clips";
 import { createRestPointerDriver } from "@/components/mouse/sprite/restPointer";
 import {
@@ -18,9 +21,18 @@ import {
 import type { MouseSpriteHandle } from "@/components/mouse/sprite/MouseSprite";
 
 import {
+  MOUSE_FOOT_PAD,
+  MOUSE_FOOT_X,
+  MOUSE_FRAME_SIZE,
+} from "@/components/mouse/sprite/clips";
+import { PATH_MOUSE_SIZE } from "@/components/mouse/sprite/MouseSprite";
+import {
+  MAX_SOFT_NUDGE,
   MOUSE_ANCHOR,
   alongAt,
+  overflowFix,
   restMotifTargets,
+  uprightAngle,
 } from "./rail-clock";
 import {
   EDGE_PATTERN,
@@ -34,24 +46,75 @@ import {
  */
 const TEXTPATH_DY = 6;
 /** Cap height as a fraction of CSS fontSize (visual ink, not em-box). */
-const CAP_RATIO = 0.40;
-/** Clearance between the visual sole and the nearest ink edge (px). */
-const FOOT_GAP = 2;
+const CAP_RATIO = 0.48;
 /**
- * Opaque sprite past the pathFootStyle pivot toward local +Y (= −n after
- * rotate). Pivot is shifted along +n by this so the sole, not the origin,
- * meets the ink edge.
+ * Clearance past ink far edge (px). Keep tiny: pathFootStyle already
+ * pivots on the paw. Large values float the sprite above glyphs.
  */
-const SOLE_EXTENT = 6;
+const FOOT_GAP = 1;
+/**
+ * Sidewalk on columns only (px along n). Prior 64→12 still read ~28px sole
+ * gap; sole-on-ink target is ≈10–18px letter↔body.
+ */
+const COLUMN_PAD = 2;
+/** AsciiSweep halo past sole toward the letter wall (px along n). */
+const SWEEP_BLOOM = 0;
+/**
+ * Vertical blend above this: snap n to toward-center (column sidewalk).
+ * ~0.55 keeps ±90 banks through the upper bend so down-travel still
+ * reads as a column (0.72 flipped to screen-up too early → “looks up”).
+ */
+const VERTICAL_FACE = 0.55;
+/** Extra sole lift — leave 0; pivot is already the paw contact. */
+const SOLE_EXTENT = 0;
+/** Keep wrap AABB inside the viewport by this margin (px). */
+const SCREEN_INSET = 8;
 /** Path sample half-width for tangent (user units). */
 const TANGENT_EPS = 2;
 /** Hysteresis band for normal blend score near zero. */
 const NORMAL_HYST = 0.08;
 const SCROLL_DIR_EPS = 0.5;
 
-/** Dark silhouette so the light sprite reads on white (~text #1A1A1A). */
-export const DEFAULT_MOUSE_TINT =
-  "brightness(0) saturate(100%) opacity(0.9)";
+const FOOT_LOCAL_X =
+  (MOUSE_FOOT_X * PATH_MOUSE_SIZE.width) / MOUSE_FRAME_SIZE.width;
+const FOOT_LOCAL_Y =
+  PATH_MOUSE_SIZE.height -
+  (MOUSE_FOOT_PAD * PATH_MOUSE_SIZE.height) / MOUSE_FRAME_SIZE.height;
+
+/** Screen AABB of the path-footed wrap after translate(foot)+rotate. */
+function wrapAabbAtFoot(
+  footSx: number,
+  footSy: number,
+  rotateDeg: number,
+): { left: number; top: number; right: number; bottom: number } {
+  const w = PATH_MOUSE_SIZE.width;
+  const h = PATH_MOUSE_SIZE.height;
+  const ox = FOOT_LOCAL_X;
+  const oy = FOOT_LOCAL_Y;
+  const rad = (rotateDeg * Math.PI) / 180;
+  const c = Math.cos(rad);
+  const s = Math.sin(rad);
+  const locals = [
+    { x: -ox, y: -oy },
+    { x: w - ox, y: -oy },
+    { x: -ox, y: h - oy },
+    { x: w - ox, y: h - oy },
+  ];
+  let left = Infinity;
+  let top = Infinity;
+  let right = -Infinity;
+  let bottom = -Infinity;
+  for (const p of locals) {
+    // CSS rotate (y-down): x' = x cos − y sin, y' = x sin + y cos.
+    const x = footSx + p.x * c - p.y * s;
+    const y = footSy + p.x * s + p.y * c;
+    if (x < left) left = x;
+    if (y < top) top = y;
+    if (x > right) right = x;
+    if (y > bottom) bottom = y;
+  }
+  return { left, top, right, bottom };
+}
 
 export type GatePaintState = {
   sitting: boolean;
@@ -68,8 +131,8 @@ export type TrailMouseProps = {
   /** Tile count so rest along list stays covered. */
   tiles: number;
   /**
-   * CSS filter on the TrailMouse wrap only (not MouseSprite).
-   * Default darkens the light frames for a white page.
+   * Optional CSS filter on the TrailMouse wrap only (not MouseSprite).
+   * Omitted by default so lab AsciiSweep / ember colors stay visible.
    */
   mouseTint?: string;
 };
@@ -111,7 +174,7 @@ export function TrailMouse({
   fontSize,
   gateRef,
   tiles,
-  mouseTint = DEFAULT_MOUSE_TINT,
+  mouseTint,
 }: TrailMouseProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const hopRef = useRef<HTMLDivElement>(null);
@@ -211,6 +274,12 @@ export function TrailMouse({
       }
       lastScrollY = scrollY;
 
+      if (baseAlongs.length !== targets.length) {
+        baseAlongs = targets.map((pt) => alongNearest(samplePath, pt));
+        baseAlongs.sort((a, b) => a - b);
+      }
+
+      // Pure clock → path: along tracks scrollY; foot stays on the sample.
       const mouseAlong = alongAt(
         scrollY,
         vh,
@@ -218,12 +287,6 @@ export function TrailMouse({
         tileLen,
         pitchPx,
       );
-
-      if (baseAlongs.length !== targets.length) {
-        baseAlongs = targets.map((pt) => alongNearest(samplePath, pt));
-        baseAlongs.sort((a, b) => a - b);
-      }
-
       const tileIndex = Math.floor(mouseAlong / tileLen);
       let local = mouseAlong - tileIndex * tileLen;
       if (local < 0) local = 0;
@@ -231,9 +294,6 @@ export function TrailMouse({
 
       const p = samplePath.getPointAtLength(local);
       const xSvg = p.x;
-      const ySvg = p.y + tileIndex * t.pitch;
-      const x = xSvg * scale;
-      const y = ySvg * scale;
 
       const a0 = Math.max(0, local - TANGENT_EPS);
       const a1 = Math.min(tileLen, local + TANGENT_EPS);
@@ -263,7 +323,9 @@ export function TrailMouse({
         nRightX * cx + nRightY * cy >= 0
           ? { x: nRightX, y: nRightY }
           : { x: -nRightX, y: -nRightY };
-      const towardUp =
+      // Flats: screen-up. Mid text path is L→R upright (buildInfiniteTextPath),
+      // so ink sits above the rail; sample guy still points down on R→L walk.
+      const towardScreenUp =
         -nRightY >= 0
           ? { x: nRightX, y: nRightY }
           : { x: -nRightX, y: -nRightY };
@@ -272,13 +334,18 @@ export function TrailMouse({
       const absTy = Math.abs(ty);
       const verticalness =
         absTx + absTy > 0 ? absTy / (absTx + absTy) : 0;
-      let nx =
-        verticalness * towardCenter.x + (1 - verticalness) * towardUp.x;
-      let ny =
-        verticalness * towardCenter.y + (1 - verticalness) * towardUp.y;
-      const nLen = Math.hypot(nx, ny) || 1;
-      nx /= nLen;
-      ny /= nLen;
+      // Columns: snap n to toward-center (letter-parallel ±90, feet→ink).
+      // Flats + curves: screen-up only. Blending towardCenter on the
+      // top-right quarter shoved the mouse into the L-hole (user-no A).
+      let nx: number;
+      let ny: number;
+      if (verticalness > VERTICAL_FACE) {
+        nx = towardCenter.x;
+        ny = towardCenter.y;
+      } else {
+        nx = towardScreenUp.x;
+        ny = towardScreenUp.y;
+      }
 
       const sideDot = nx * nRightX + ny * nRightY;
       if (Math.abs(sideDot) < NORMAL_HYST && lastClearSign != null) {
@@ -288,42 +355,164 @@ export function TrailMouse({
         lastClearSign = sideDot >= 0 ? 1 : -1;
       }
 
-      // Ink band along glyphUp from path: [dy, dy+cap]*scale.
-      // Sole (pivot − n·SOLE_EXTENT) sits on the ink edge; body extends along +n.
+      // Ink band: columns use sample glyph-up; flats use screen-up (text L→R).
       const inkFar = (TEXTPATH_DY + CAP_RATIO * fontSize) * scale;
-      const onGlyphFace = nx * gux + ny * guy > 0;
+      const inkX = verticalness * gux + (1 - verticalness) * 0;
+      const inkY = verticalness * guy + (1 - verticalness) * -1;
+      const onGlyphFace = nx * inkX + ny * inkY > 0;
+      const columnPad = verticalness * COLUMN_PAD;
+      const bloom = verticalness * SWEEP_BLOOM;
+      // Sidewalk only: never add inkFar on the center-side column face —
+      // ink grows outward; feet stay beside the inner glyph edge.
       const alongN = onGlyphFace
-        ? inkFar + FOOT_GAP + SOLE_EXTENT
-        : FOOT_GAP + SOLE_EXTENT;
-      const ox = nx * alongN;
-      const oy = ny * alongN;
+        ? inkFar + FOOT_GAP + SOLE_EXTENT + columnPad + bloom
+        : FOOT_GAP + SOLE_EXTENT + columnPad + bloom;
 
-      // Local -Y (sprite head) → n. Facing is scaleX only (MouseSprite).
-      const rotateDeg = (Math.atan2(nx, -ny) * 180) / Math.PI;
+      // Local -Y (dorsal/ears) → clearance normal n (toward center on columns).
+      // Columns: ±90 so spine is parallel to the rail, feet on the letter wall.
+      // Upright: if dorsal would point screen-down (R→L mid), +180.
+      const rotateDeg = uprightAngle((Math.atan2(nx, -ny) * 180) / Math.PI);
       const travelX = tx * lastDir;
       const travelY = ty * lastDir;
-      const localX = -ny;
-      const localY = nx;
+      const rad = (rotateDeg * Math.PI) / 180;
+      const localX = Math.cos(rad);
+      const localY = Math.sin(rad);
       const faceDot = travelX * localX + travelY * localY;
-      const facing: "left" | "right" = faceDot >= 0 ? "right" : "left";
-
-      wrap.style.transform = `translate(${x + ox}px, ${y + oy}px) rotate(${rotateDeg}deg)`;
+      /**
+       * Nose leads travel everywhere (columns + bends). Former screen-up
+       * column flip made “goes down / looks up” on the right rail.
+       * Sit uses rotate(0) below and ignores this bank facing.
+       */
+      let facing: "left" | "right" = faceDot >= 0 ? "right" : "left";
+      {
+        const radV = (rotateDeg * Math.PI) / 180;
+        const noseX =
+          facing === "right" ? Math.cos(radV) : -Math.cos(radV);
+        const noseY =
+          facing === "right" ? Math.sin(radV) : -Math.sin(radV);
+        if (travelX * noseX + travelY * noseY < -0.02) {
+          facing = facing === "right" ? "left" : "right";
+        }
+      }
 
       const gate = gateRef.current;
       const sitting = gate.sitting;
+      wrap.dataset.sitting = sitting ? "1" : "0";
+
+      // Sit is rotate(0): banked alongN (column pad + sole along n) leaves a
+      // float gap once the spine is upright. Recompute clearance for the
+      // upright sole (local +Y = screen down) without column bloom.
+      let placeNx = nx;
+      let placeNy = ny;
+      let placeAlong = alongN;
+      let displayRotate = rotateDeg;
+      if (sitting) {
+        displayRotate = 0;
+        placeAlong = onGlyphFace
+          ? inkFar + FOOT_GAP + SOLE_EXTENT
+          : FOOT_GAP + SOLE_EXTENT;
+        if (verticalness > VERTICAL_FACE) {
+          // Column sit: keep sidewalk side, drop vertical bank lift.
+          placeNx = nx;
+          placeNy = 0;
+          const pLen = Math.abs(placeNx) || 1;
+          placeNx /= pLen;
+        } else {
+          // Flat sit: stand on ink from screen-up.
+          placeNx = 0;
+          placeNy = -1;
+        }
+      }
+
+      const ox = placeNx * placeAlong;
+      const oy = placeNy * placeAlong;
+
+      // Absolute-in-track from SVG origin: path sample + clearance along n.
+      let trackX = p.x * scale + ox;
+      let trackY = (p.y + tileIndex * t.pitch) * scale + oy;
+
+      const mouseTransform = (x: number, y: number, rot: number) =>
+        `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+
+      wrap.dataset.along = String(mouseAlong);
+      wrap.dataset.tileLen = String(tileLen);
+      wrap.dataset.pitchPx = String(pitchPx);
+      wrap.dataset.bank = `${displayRotate.toFixed(2)},${placeNx.toFixed(3)},${placeNy.toFixed(3)},${facing}`;
+      wrap.dataset.scaleY = "1";
+
+      // Soft screen containment: toward-rail (−n) only, columns only.
+      // On flats, top-clip → toward-rail is +Y and yanks the foot off the
+      // glyphs (desplazamiento). Composition > clamp; brief off-screen OK.
+      // Screen nudge ≠ along-clock pin. Never grow +n into the void.
+      // AABB uses displayRotate so sit (0°) matches the upright pose.
+      {
+        const vw = window.innerWidth || 1;
+        const svgRect = svg.getBoundingClientRect();
+        const pathX = trackX;
+        const pathY = trackY;
+        wrap.style.transform = mouseTransform(pathX, pathY, displayRotate);
+        void wrap.offsetWidth;
+        let nudgeX = 0;
+        let nudgeY = 0;
+        let nudgeSkipped = "";
+        if (verticalness > VERTICAL_FACE) {
+          const measured = wrap.getBoundingClientRect();
+          const analytic = wrapAabbAtFoot(
+            svgRect.left + pathX,
+            svgRect.top + pathY,
+            displayRotate,
+          );
+          const aabb = {
+            left: Math.min(analytic.left, measured.left),
+            top: Math.min(analytic.top, measured.top),
+            right: Math.max(analytic.right, measured.right),
+            bottom: Math.max(analytic.bottom, measured.bottom),
+          };
+          // +6 absorbs gBCR/compositor shortfall observed on flats (~4–6px).
+          const inset = SCREEN_INSET + 6;
+          const fix = overflowFix(aabb, vw, vh, inset);
+          const nDot = fix.x * placeNx + fix.y * placeNy;
+          // Only the component that pulls toward the rail (−n). No axis follow-up.
+          const towardRail = Math.min(0, nDot);
+          nudgeX = placeNx * towardRail;
+          nudgeY = placeNy * towardRail;
+          const nudgeMag = Math.hypot(nudgeX, nudgeY);
+          if (nudgeMag > MAX_SOFT_NUDGE && nudgeMag > 0) {
+            const s = MAX_SOFT_NUDGE / nudgeMag;
+            nudgeX *= s;
+            nudgeY *= s;
+            wrap.dataset.nudgeClamped = nudgeMag.toFixed(1);
+          } else {
+            wrap.dataset.nudgeClamped = "";
+          }
+          nudgeSkipped =
+            Math.abs(towardRail) < 1e-3 && (fix.x || fix.y) ? "axis" : "";
+        } else {
+          wrap.dataset.nudgeClamped = "";
+          nudgeSkipped = "flat";
+        }
+        trackX += nudgeX;
+        trackY += nudgeY;
+        wrap.dataset.screenNudge = `${nudgeX.toFixed(1)},${nudgeY.toFixed(1)}`;
+        wrap.dataset.nudgeSkipped = nudgeSkipped;
+        wrap.dataset.clearance = placeAlong.toFixed(1);
+      }
+
+      wrap.style.transform = mouseTransform(trackX, trackY, displayRotate);
+      wrap.dataset.bank = `${displayRotate.toFixed(2)},${placeNx.toFixed(3)},${placeNy.toFixed(3)},${facing}`;
 
       if (sitting) {
         enterSit();
         lastAlong = mouseAlong;
-        lastX = x;
-        lastY = y;
+        lastX = trackX;
+        lastY = trackY;
         return;
       }
 
       leaveSit();
 
-      const dx = x - lastX;
-      const dyCss = y - lastY;
+      const dx = trackX - lastX;
+      const dyCss = trackY - lastY;
       const dist = Number.isFinite(lastAlong)
         ? Math.hypot(dx, dyCss)
         : 0;
@@ -331,8 +520,8 @@ export function TrailMouse({
         ? mouseAlong - lastAlong
         : 0;
       lastAlong = mouseAlong;
-      lastX = x;
-      lastY = y;
+      lastX = trackX;
+      lastY = trackY;
 
       const moving =
         Math.abs(scrollDelta) > SCROLL_DIR_EPS || Math.abs(deltaAlong) >= 0.4;

@@ -12,6 +12,7 @@ import {
 import {
   EDGE_PATTERN,
   buildInfinitePath,
+  buildInfiniteTextPath,
   viewHeight,
   type Pattern,
 } from "./pattern";
@@ -59,6 +60,8 @@ const REST_RELEASE = 22;
 const REST_DECAY = 0.6;
 /** Re-arm a passed gate when scroll rises this far above it (fraction of vh). */
 const REARM_VH = 0.5;
+/** Trail letter fade when entering / leaving rest (MDN: CSS transition + opacity). */
+const TRAIL_FADE_MS = 320;
 
 function wheelDeltaYPx(event: WheelEvent): number {
   switch (event.deltaMode) {
@@ -114,7 +117,7 @@ export type InfiniteTextTrailProps = {
   textColor?: string;
   /** Pixel mouse on the rail with mid-column rest gates. Default off. */
   mouse?: boolean;
-  /** CSS filter for TrailMouse on light backgrounds. */
+  /** Optional CSS filter on TrailMouse wrap. Omitted = lab sprite colors. */
   mouseTint?: string;
 };
 
@@ -157,12 +160,22 @@ export function InfiniteTextTrail({
   const baseAlongsRef = useRef<number[]>([]);
   const tileLenRef = useRef(0);
   const restMeterRef = useRef(0);
+  const textOpacityRef = useRef(textOpacity);
+  /** Writes gateRef and mirrors sitting → trail letter opacity (0..textOpacity). */
+  const writeGateRef = useRef<(next: GatePaintState) => void>(() => {});
 
   const [tiles, setTiles] = useState(2);
   const [textWindow, setTextWindow] = useState({ startOffset: 0, copies: 4 });
   const [period, setPeriod] = useState(() => estimatePeriod(text, fontSize));
+  const [trailOpacity, setTrailOpacity] = useState(textOpacity);
+  const [trailFadeMs, setTrailFadeMs] = useState(TRAIL_FADE_MS);
 
   const d = useMemo(() => buildInfinitePath(pattern, tiles), [pattern, tiles]);
+  /** Text-only: mid R→L cubics reversed so glyph-up is screen-up (mouse keeps `d`). */
+  const textD = useMemo(
+    () => buildInfiniteTextPath(pattern, tiles),
+    [pattern, tiles],
+  );
   const sampleD = useMemo(() => buildInfinitePath(pattern, 1), [pattern]);
   const height = viewHeight(pattern, tiles);
   const width = tiling.width;
@@ -177,7 +190,27 @@ export function InfiniteTextTrail({
     windowRef.current = textWindow;
     tilingRef.current = tiling;
     mouseEnabledRef.current = mouse;
+    textOpacityRef.current = textOpacity;
+    writeGateRef.current = (next) => {
+      const prevSitting = gateRef.current.sitting;
+      gateRef.current = next;
+      if (next.sitting !== prevSitting) {
+        setTrailOpacity(next.sitting ? 0 : textOpacityRef.current);
+      }
+    };
   });
+
+  useLayoutEffect(() => {
+    if (!gateRef.current.sitting) setTrailOpacity(textOpacity);
+  }, [textOpacity]);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setTrailFadeMs(mq.matches ? 0 : TRAIL_FADE_MS);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const syncBaseAlongs = useCallback(() => {
     const sample = samplePathRef.current;
@@ -204,7 +237,7 @@ export function InfiniteTextTrail({
   const refreshArmedGate = useCallback(() => {
     if (!mouseEnabledRef.current) {
       armedGateRef.current = null;
-      gateRef.current = { sitting: false, meter: 0 };
+      writeGateRef.current({ sitting: false, meter: 0 });
       return;
     }
     const { pitchPx, vh, tileLen } = railMetrics();
@@ -372,18 +405,18 @@ export function InfiniteTextTrail({
               (-GATE_STIFFNESS * over - GATE_DAMPING * velocity) * dt;
           }
           // Pinned: sitting at the soft wall.
-          gateRef.current = {
+          writeGateRef.current({
             sitting: true,
             meter: Math.min(1, restMeterRef.current / REST_RELEASE),
-          };
+          });
         } else {
-          gateRef.current = {
+          writeGateRef.current({
             sitting: false,
             meter: Math.min(1, restMeterRef.current / REST_RELEASE),
-          };
+          });
         }
       } else {
-        gateRef.current = { sitting: false, meter: 0 };
+        writeGateRef.current({ sitting: false, meter: 0 });
       }
 
       if (position < -MAX_OVERSCROLL) {
@@ -436,7 +469,7 @@ export function InfiniteTextTrail({
       passedGatesRef.current.push(gate);
       armedGateRef.current = null;
       restMeterRef.current = 0;
-      gateRef.current = { sitting: false, meter: 0 };
+      writeGateRef.current({ sitting: false, meter: 0 });
       refreshArmedGate();
     };
 
@@ -460,10 +493,10 @@ export function InfiniteTextTrail({
       if (atGate && dy > 0) {
         const impulse = dy / SCROLL_HEAVINESS;
         restMeterRef.current += Math.abs(impulse);
-        gateRef.current = {
+        writeGateRef.current({
           sitting: true,
           meter: Math.min(1, restMeterRef.current / REST_RELEASE),
-        };
+        });
         if (restMeterRef.current >= REST_RELEASE) {
           releaseGate(gate);
           // Small nudge past the wall so we do not immediately re-pin.
@@ -535,10 +568,10 @@ export function InfiniteTextTrail({
       ) {
         window.scrollTo({ top: gate, left: 0, behavior: "instant" });
         lastScrollYRef.current = gate;
-        gateRef.current = {
+        writeGateRef.current({
           sitting: true,
           meter: Math.min(1, restMeterRef.current / REST_RELEASE),
-        };
+        });
         paint();
         return;
       }
@@ -578,7 +611,7 @@ export function InfiniteTextTrail({
   const maskPad = fontSize * 2.2;
 
   return (
-    <div className="relative bg-white">
+    <div className="relative bg-transparent">
       <svg
         ref={svgRef}
         width="100%"
@@ -593,13 +626,15 @@ export function InfiniteTextTrail({
         }}
       >
         <defs>
-          <path id={trailId} d={d} fill="none" />
+          {/* Mask / draw clock follow sample topology (R→L mid). */}
           <path
             ref={samplePathRef}
             d={sampleD}
             fill="none"
             aria-hidden
           />
+          {/* textPath only: mid flats L→R for viewer-upright glyphs. */}
+          <path id={trailId} d={textD} fill="none" />
           <mask
             id={maskId}
             maskUnits="userSpaceOnUse"
@@ -635,8 +670,19 @@ export function InfiniteTextTrail({
           mask={`url(#${maskId})`}
           className="font-heading font-semibold tracking-tighter"
           letterSpacing={-2.4}
-          style={{ fontSize, fill: textColor, opacity: textOpacity }}
+          style={{
+            fontSize,
+            fill: textColor,
+            opacity: trailOpacity,
+            // MDN: transition opacity; duration 0 when prefers-reduced-motion.
+            transition:
+              trailFadeMs > 0 ? `opacity ${trailFadeMs}ms ease` : "none",
+          }}
         >
+          {/*
+            Mid upright via buildInfiniteTextPath (reversed mid flat only), not
+            textPath side (Firefox-only per MDN; would also flip columns).
+          */}
           <textPath
             href={`#${trailId}`}
             startOffset={textWindow.startOffset}
