@@ -1,0 +1,123 @@
+{
+  "mouseAboveLetters": true,
+  "asciiSweepWalking": true,
+  "noBlackoutTint": true,
+  "sitOn": {
+    "scrollY": 563,
+    "sitting": true,
+    "trailOp": 0,
+    "bank": "-90.00,-1.000,0.000,right",
+    "box": {
+      "l": 1006.3,
+      "t": 113.8,
+      "r": 1135.3,
+      "b": 261.8,
+      "cx": 1070.8,
+      "cy": 187.8
+    }
+  },
+  "sitOff": {
+    "scrollY": 688,
+    "sitting": false,
+    "trailOp": 1,
+    "bank": "-90.00,-1.000,0.000,right",
+    "box": {
+      "l": 1006.3,
+      "t": 223.4,
+      "r": 1135.3,
+      "b": 371.4,
+      "cx": 1070.8,
+      "cy": 297.4
+    }
+  },
+  "shots": {
+    "top": {
+      "scrollY": 173,
+      "bank": "0.27,0.005,-1.000,right",
+      "box": {
+        "l": 950.4,
+        "t": -145.6,
+        "r": 1099,
+        "b": -15.9,
+        "cx": 1024.7,
+        "cy": -80.7
+      },
+      "nudge": "0.0,0.0",
+      "nudgeSkipped": "159.0"
+    },
+    "right": {
+      "scrollY": 455,
+      "bank": "-90.00,-1.000,0.000,right",
+      "box": {
+        "l": 1006.3,
+        "t": 15.6,
+        "r": 1135.3,
+        "b": 163.6,
+        "cx": 1070.8,
+        "cy": 89.6
+      },
+      "filter": "none",
+      "canvases": [
+        {
+          "w": 129,
+          "h": 148,
+          "cw": 0,
+          "ch": 0
+        },
+        {
+          "w": 129,
+          "h": 148,
+          "cw": 0,
+          "ch": 0
+        },
+        {
+          "w": 148,
+          "h": 129,
+          "cw": 148,
+          "ch": 129
+        }
+      ]
+    },
+    "mid": {
+      "scrollY": 941,
+      "bank": "359.14,0.015,1.000,left",
+      "box": {
+        "l": 979.9,
+        "t": 334.8,
+        "r": 1129.8,
+        "b": 466,
+        "cx": 1054.8,
+        "cy": 400.4
+      },
+      "ny": 1,
+      "rotate": 359.14
+    },
+    "left": {
+      "scrollY": 1548,
+      "bank": "90.00,1.000,0.000,left",
+      "box": {
+        "l": 176.2,
+        "t": 13.3,
+        "r": 305.2,
+        "b": 161.3,
+        "cx": 240.7,
+        "cy": 87.3
+      },
+      "nudge": "0.0,10.0",
+      "nudgeSkipped": ""
+    }
+  },
+  "midSide": {
+    "scrollY": 942,
+    "bank": "359.14,0.015,1.000,left",
+    "mouseCenterY": 399.40435791015625,
+    "inkCentroidY": 416.1165254237287,
+    "soleY": 465.00146484375,
+    "sidewalkRead": true
+  },
+  "sitFadeOk": true,
+  "biasFlip": false,
+  "biasFlipReason": "mid R→L: mouseAboveLetters=true, sole in ink band, rotate~0 sidewalk on inverted glyph tops; keep towardGlyph (ny≈+1)",
+  "e2e": "PASS",
+  "codeChanges": "none in components/text-trail"
+}

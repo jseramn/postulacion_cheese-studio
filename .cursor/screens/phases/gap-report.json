@@ -1,0 +1,303 @@
+{
+  "pathLengths": {
+    "maskLen": 7567.7607421875,
+    "textLen": 7567.7607421875,
+    "equal": true
+  },
+  "midLetter": {
+    "measurable": true,
+    "upright": true,
+    "mostlyUpright": true,
+    "uprightCount": 31,
+    "invertedCount": 0,
+    "rot": -3.502685785293579,
+    "sample": {
+      "i": 120,
+      "rot": -3.502685785293579,
+      "d": 1365.9037430072203,
+      "kind": "up",
+      "x": 632.1197509765625,
+      "y": 363.8917541503906
+    }
+  },
+  "cornerLetter": {
+    "bins": {
+      "up": 45,
+      "inv": 0,
+      "q90": 20,
+      "q120_160": 0,
+      "other": 7
+    },
+    "flatUpright": 31,
+    "flatInv": 0,
+    "rightBend": {
+      "count": 21,
+      "bins": {
+        "q90": 10,
+        "up": 7,
+        "other": 4
+      },
+      "maxTiltFromFlat": 90,
+      "meanTiltFromFlat": 54.94285714285713,
+      "samples": [
+        {
+          "i": 86,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 177,
+          "bin": "q90"
+        },
+        {
+          "i": 87,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 204,
+          "bin": "q90"
+        },
+        {
+          "i": 88,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 233,
+          "bin": "q90"
+        },
+        {
+          "i": 89,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 260,
+          "bin": "q90"
+        },
+        {
+          "i": 90,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 287,
+          "bin": "q90"
+        },
+        {
+          "i": 91,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 304,
+          "bin": "q90"
+        },
+        {
+          "i": 92,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 323,
+          "bin": "q90"
+        },
+        {
+          "i": 93,
+          "rot": 90,
+          "a": 90,
+          "x": 1237,
+          "y": 353,
+          "bin": "q90"
+        },
+        {
+          "i": 148,
+          "rot": -88.6,
+          "a": 271.4,
+          "x": 1211,
+          "y": 365,
+          "bin": "q90"
+        },
+        {
+          "i": 147,
+          "rot": -76.1,
+          "a": 283.9,
+          "x": 1208,
+          "y": 389,
+          "bin": "q90"
+        }
+      ]
+    },
+    "leftBend": {
+      "count": 11,
+      "bins": {
+        "other": 2,
+        "up": 9
+      },
+      "samples": [
+        {
+          "i": 96,
+          "rot": -58.3,
+          "a": 301.7,
+          "x": 64,
+          "y": 581,
+          "bin": "other"
+        },
+        {
+          "i": 97,
+          "rot": -47.4,
+          "a": 312.6,
+          "x": 80,
+          "y": 560,
+          "bin": "other"
+        },
+        {
+          "i": 98,
+          "rot": -40,
+          "a": 320,
+          "x": 93,
+          "y": 547,
+          "bin": "up"
+        },
+        {
+          "i": 99,
+          "rot": -33.2,
+          "a": 326.8,
+          "x": 107,
+          "y": 537,
+          "bin": "up"
+        },
+        {
+          "i": 100,
+          "rot": -23,
+          "a": 337,
+          "x": 129,
+          "y": 525,
+          "bin": "up"
+        },
+        {
+          "i": 101,
+          "rot": -12.2,
+          "a": 347.8,
+          "x": 154,
+          "y": 517,
+          "bin": "up"
+        },
+        {
+          "i": 102,
+          "rot": 0,
+          "a": 360,
+          "x": 184,
+          "y": 514,
+          "bin": "up"
+        },
+        {
+          "i": 103,
+          "rot": -0.4,
+          "a": 359.6,
+          "x": 213,
+          "y": 514,
+          "bin": "up"
+        }
+      ]
+    },
+    "tiltSamples": [],
+    "at": 860
+  },
+  "midGlyphsUpright": true,
+  "shots": {
+    "right": {
+      "scrollY": 558,
+      "transform": "translate(1126.15px, 753.164px) rotate(-90deg)",
+      "bank": "-90.00,-1.000,0.000,right",
+      "rotate": -90,
+      "nx": -1,
+      "ny": 0,
+      "facing": "right",
+      "sitting": false,
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "nudgeClamped": "",
+      "nudgeSkipped": "",
+      "box": {
+        "l": 1006.3,
+        "t": 103.7,
+        "r": 1135.3,
+        "b": 251.7,
+        "cx": 1070.8,
+        "cy": 177.7
+      }
+    },
+    "mid": {
+      "scrollY": 974,
+      "transform": "translate(979.454px, 1303.74px) rotate(-1.5582deg)",
+      "bank": "-1.56,-0.027,-1.000,left",
+      "rotate": -1.56,
+      "nx": -0.027,
+      "ny": -1,
+      "facing": "left",
+      "sitting": false,
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "nudgeClamped": "",
+      "nudgeSkipped": "",
+      "box": {
+        "l": 919.7,
+        "t": 207.5,
+        "r": 1071.1,
+        "b": 340.4,
+        "cx": 995.4,
+        "cy": 273.9
+      }
+    },
+    "left": {
+      "scrollY": 1507,
+      "transform": "translate(185.366px, 1564.57px) rotate(90deg)",
+      "bank": "90.00,1.000,0.000,left",
+      "rotate": 90,
+      "nx": 1,
+      "ny": 0,
+      "facing": "left",
+      "sitting": false,
+      "nudge": "0.0,40.0",
+      "nudgeMag": 40,
+      "nudgeClamped": "49.0",
+      "nudgeSkipped": "",
+      "box": {
+        "l": 176.2,
+        "t": 1,
+        "r": 305.2,
+        "b": 149,
+        "cx": 240.7,
+        "cy": 75
+      }
+    },
+    "corner": {
+      "scrollY": 859,
+      "bank": "-42.36,-0.674,-0.739,right",
+      "rotate": -42.36,
+      "nx": -0.674,
+      "ny": -0.739,
+      "sitting": false,
+      "box": {
+        "cx": 1121.5,
+        "cy": 364.8,
+        "t": 267.3,
+        "l": 1023.4,
+        "r": 1219.7,
+        "b": 462.3
+      }
+    },
+    "sit": {
+      "scrollY": 563,
+      "sitting": true,
+      "rotate": 0,
+      "bank": "0.00,-1.000,0.000,right",
+      "rotateNearZero": true
+    }
+  },
+  "leftTopOk": true,
+  "leftTopBetterThan39": true,
+  "files": {
+    "right": "phases/gap-03-right.png",
+    "mid": "phases/gap-05-mid.png",
+    "left": "phases/gap-06-left.png",
+    "corner": "phases/gap-corner.png",
+    "sit": "phases/gap-sit.png"
+  },
+  "approach": "FixA: soft nudge scale-to-MAX not skip; FixB: mid triad reverse (entry+flat+exit)"
+}

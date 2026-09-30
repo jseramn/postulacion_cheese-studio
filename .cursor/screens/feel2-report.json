@@ -1,0 +1,27 @@
+{
+  "sit": {
+    "sitting": true,
+    "rotateDeg": 0,
+    "rotateNearZero": true,
+    "trailFaded": true,
+    "transform": "translate(1214.15px, 768.299px) rotate(0deg)",
+    "scrollY": 868
+  },
+  "right": {
+    "rotateDeg": -90,
+    "transform": "translate(1212.15px, 1016.14px) rotate(-90deg)"
+  },
+  "mid": {
+    "rotateDeg": -29.6846,
+    "transform": "translate(1138.53px, 1296.4px) rotate(-29.6846deg)",
+    "letterUpright": true,
+    "letterMeasurable": true,
+    "letterRot": 0.7014970183372498,
+    "letterNote": "mid glyphs viewer-upright (text path reverses R→L flats)",
+    "sideSkipped": "SVG2 textPath side is Firefox-only; mid upright via buildInfiniteTextPath"
+  },
+  "left": {
+    "rotateDeg": 90,
+    "transform": "translate(99.3658px, 2114.86px) rotate(90deg)"
+  }
+}

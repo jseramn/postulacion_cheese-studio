@@ -4,16 +4,20 @@ Interactive homage microsite. Original cheese-wedge mouse. Not Cheese Studio's o
 
 ## Run
 
+Node 24 (see `.nvmrc`). Package manager is pnpm 12 (`packageManager` in `package.json`). No `.env` is required.
+
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Scroll to walk the mouse and drop crumbs.
+Open [http://localhost:3000](http://localhost:3000). Labs: `/scroll`, `/wispr-infinito`.
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
+pnpm exec eslint components/text-trail app/wispr-infinito
+pnpm exec tsc --noEmit -p .
 ```
 
 ## Stack

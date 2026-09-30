@@ -1,0 +1,96 @@
+﻿{
+    "pathLengths":  {
+                        "maskLen":  7567.7607421875,
+                        "textLen":  7567.76025390625,
+                        "equal":  true
+                    },
+    "midLetter":  {
+                      "measurable":  true,
+                      "upright":  true,
+                      "mostlyUpright":  true,
+                      "uprightCount":  31,
+                      "invertedCount":  0,
+                      "rot":  -3.502686023712158,
+                      "sample":  {
+                                     "i":  120,
+                                     "rot":  -3.502686023712158,
+                                     "d":  1514.3357644649222,
+                                     "kind":  "up",
+                                     "x":  632.1198120117188,
+                                     "y":  361.8917541503906
+                                 }
+                  },
+    "midGlyphsUpright":  true,
+    "shots":  {
+                  "mid":  {
+                              "scrollY":  976,
+                              "transform":  "translate(975.651px, 1303.81px) rotate(-1.58082deg)",
+                              "bank":  "-1.58,-0.028,-1.000,left",
+                              "rotate":  -1.58,
+                              "nx":  -0.028,
+                              "ny":  -1,
+                              "facing":  "left",
+                              "sitting":  false,
+                              "box":  {
+                                          "l":  915.8,
+                                          "t":  205.5,
+                                          "r":  1067.3,
+                                          "b":  338.5,
+                                          "cx":  991.6,
+                                          "cy":  272
+                                      }
+                          },
+                  "right":  {
+                                "scrollY":  317,
+                                "transform":  "translate(1137.67px, 307.705px) rotate(80.4983deg)",
+                                "bank":  "80.50,-0.986,0.165,left",
+                                "rotate":  80.5,
+                                "nx":  -0.986,
+                                "ny":  0.165,
+                                "facing":  "left",
+                                "sitting":  false,
+                                "box":  {
+                                            "l":  1119.3,
+                                            "t":  -84.8,
+                                            "r":  1271,
+                                            "b":  82.4,
+                                            "cx":  1195.2,
+                                            "cy":  -1.2
+                                        }
+                            },
+                  "left":  {
+                               "scrollY":  1501,
+                               "transform":  "translate(185.003px, 1515.67px) rotate(90.2479deg)",
+                               "bank":  "90.25,1.000,0.004,left",
+                               "rotate":  90.25,
+                               "nx":  1,
+                               "ny":  0.004,
+                               "facing":  "left",
+                               "sitting":  false,
+                               "box":  {
+                                           "l":  175.5,
+                                           "t":  -41.9,
+                                           "r":  305.1,
+                                           "b":  106.7,
+                                           "cx":  240.3,
+                                           "cy":  32.4
+                                       }
+                           },
+                  "sit":  {
+                              "scrollY":  564,
+                              "sitting":  true,
+                              "rotate":  0,
+                              "bank":  "0.00,-1.000,0.000,right",
+                              "rotateNearZero":  true
+                          }
+              },
+    "files":  {
+                  "mid":  "phases/upright-05-mid.png",
+                  "right":  "phases/upright-03-right.png",
+                  "left":  "phases/upright-06-left.png",
+                  "sit":  "phases/upright-sit.png"
+              },
+    "approach":  "text-only buildInfiniteTextPath (reverse Râ†’L flats via M+cubic+M); mouse sample unchanged",
+    "e2e":  "PASS",
+    "visualMid":  "getRotationOfChar mid flats: 31 upright / 0 inverted (rot~-3.5); text path mid tx\u003e0"
+}

@@ -1,0 +1,40 @@
+{
+  "MOUSE_ANCHOR": 0.12,
+  "DRAW_ANCHOR": 0.8,
+  "scrollY0": {
+    "scrollY": 0,
+    "mouseAlong": 156.09,
+    "local": 156.09,
+    "frac": 0.0413,
+    "foot": {
+      "x": 168,
+      "y": 195.7
+    },
+    "boxCx": 175.8,
+    "boxCy": 100.5,
+    "segment": "left-entry",
+    "clearance": "33.3",
+    "screenNudge": "0.0,0.0",
+    "nudgeSkipped": "flat",
+    "bank": "34.80,0.571,-0.821,right",
+    "mouseAnchorImplied": 0.12
+  },
+  "scrollY80": {
+    "scrollY": 80,
+    "mouseAlong": 286.16,
+    "local": 286.16,
+    "frac": 0.0756,
+    "foot": {
+      "x": 269.4,
+      "y": 83.3
+    },
+    "boxCx": 275.3,
+    "boxCy": 18.5,
+    "segment": "left-entry",
+    "clearance": "32.5",
+    "screenNudge": "0.0,0.0",
+    "nudgeSkipped": "flat",
+    "bank": "0.20,0.004,-1.000,right",
+    "mouseAnchorImplied": 0.12
+  }
+}

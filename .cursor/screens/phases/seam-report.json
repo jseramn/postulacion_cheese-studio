@@ -1,0 +1,9 @@
+﻿{
+  "fix": "continuous L→R mid (D→C→B→A); M only at left-column D; right column stops TEXT_MID_COLUMN_GAP above A",
+  "corner": { "pilePairs": 0, "crushed": false },
+  "mid": { "uprightCount": 37, "invertedCount": 0, "mostlyUpright": true },
+  "e2e": "PASS",
+  "sit": 0,
+  "softNudge": "MAX_SOFT_NUDGE=40 kept",
+  "files": { "corner": "phases/seam-corner.png", "mid": "phases/seam-mid.png" }
+}

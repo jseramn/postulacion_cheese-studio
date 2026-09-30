@@ -1,0 +1,174 @@
+{
+  "MOUSE_ANCHOR": 0.12,
+  "alongAt0": 156.08504516601565,
+  "at0": {
+    "y": 0,
+    "along": 156.08504516601565,
+    "bank": "34.80,0.571,-0.821,right",
+    "sit": "0",
+    "clearance": 48.3,
+    "rot": 34.8,
+    "nx": 0.571,
+    "ny": -0.821,
+    "facing": "right",
+    "noseX": 0.821,
+    "noseY": 0.571,
+    "onScreen": true,
+    "box": {
+      "cx": 184.4,
+      "cy": 88.2,
+      "left": 86.8,
+      "top": -7,
+      "right": 282,
+      "bottom": 183.4
+    }
+  },
+  "overlap": {
+    "y": 867,
+    "along": 1565.7281093215945,
+    "bank": "0.00,-1.000,0.000,right",
+    "sit": "1",
+    "clearance": 16,
+    "rot": 0,
+    "nx": -1,
+    "ny": 0,
+    "facing": "right",
+    "noseX": 1,
+    "noseY": 0,
+    "onScreen": false,
+    "box": {
+      "cx": 1225.6,
+      "cy": -154,
+      "left": 1151.6,
+      "top": -218.5,
+      "right": 1299.6,
+      "bottom": -89.5
+    }
+  },
+  "rightDown": {
+    "y": 980,
+    "along": 1749.453214569092,
+    "bank": "-90.00,-1.000,0.000,left",
+    "sit": "0",
+    "clearance": 18,
+    "rot": -90,
+    "nx": -1,
+    "ny": 0,
+    "facing": "left",
+    "noseX": 0,
+    "noseY": 1,
+    "onScreen": true,
+    "box": {
+      "cx": 1150.8,
+      "cy": -15.4,
+      "left": 1086.3,
+      "top": -89.4,
+      "right": 1215.3,
+      "bottom": 58.6
+    },
+    "lookMatchesTravel": true,
+    "note": "CSS y-down: noseY>0 means looking screen-down (travel down on right col)"
+  },
+  "cornerMouse": {
+    "y": 1162,
+    "along": 2045.3644460296632,
+    "bank": "-43.20,-0.685,-0.729,right",
+    "sit": "0",
+    "clearance": 17,
+    "rot": -43.2,
+    "nx": -0.685,
+    "ny": -0.729,
+    "facing": "right",
+    "noseX": 0.729,
+    "noseY": -0.685,
+    "onScreen": true,
+    "box": {
+      "cx": 1147,
+      "cy": 88.5,
+      "left": 1048.9,
+      "top": -9.2,
+      "right": 1245.1,
+      "bottom": 186.2
+    }
+  },
+  "corner": {
+    "measurable": true,
+    "count": 8,
+    "pilePairs": 0,
+    "ySpan": 4.3,
+    "xSpan": 176.6,
+    "crushed": false,
+    "samples": [
+      {
+        "i": 116,
+        "ch": "E",
+        "x": 1076.7,
+        "y": 174.9,
+        "rot": -0.3
+      },
+      {
+        "i": 115,
+        "ch": "P",
+        "x": 1046.1,
+        "y": 175.1,
+        "rot": -0.7
+      },
+      {
+        "i": 114,
+        "ch": "O",
+        "x": 1027.4,
+        "y": 175.4,
+        "rot": -1
+      },
+      {
+        "i": 113,
+        "ch": "L",
+        "x": 1009.8,
+        "y": 175.8,
+        "rot": -1.2
+      },
+      {
+        "i": 112,
+        "ch": "E",
+        "x": 982.7,
+        "y": 176.4,
+        "rot": -1.5
+      },
+      {
+        "i": 111,
+        "ch": "V",
+        "x": 956.4,
+        "y": 177.2,
+        "rot": -1.8
+      },
+      {
+        "i": 110,
+        "ch": "E",
+        "x": 927.2,
+        "y": 178.2,
+        "rot": -2.1
+      },
+      {
+        "i": 109,
+        "ch": "D",
+        "x": 900.1,
+        "y": 179.2,
+        "rot": -2.4
+      }
+    ]
+  },
+  "banks": {
+    "at0": "34.80,0.571,-0.821,right",
+    "overlap": "0.00,-1.000,0.000,right",
+    "rightDown": "-90.00,-1.000,0.000,left",
+    "corner": "-43.20,-0.685,-0.729,right"
+  },
+  "pilePairs": 0,
+  "verdict": {
+    "earlierStart": true,
+    "mouseVisibleAt0": true,
+    "clearanceOk": true,
+    "lookDownOnRight": true,
+    "noCornerCrush": true
+  }
+}

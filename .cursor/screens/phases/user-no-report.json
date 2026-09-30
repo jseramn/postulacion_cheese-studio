@@ -1,0 +1,162 @@
+{
+  "shots": {
+    "a": {
+      "scrollY": 420,
+      "transform": "translate(1198.15px, 522.184px) rotate(-90deg)",
+      "bank": "-90.00,-1.000,0.000,right",
+      "rotate": -90,
+      "nx": -1,
+      "ny": 0,
+      "facing": "right",
+      "sitting": false,
+      "clearance": 26,
+      "nudge": "0.0,32.0",
+      "nudgeMag": 32,
+      "box": {
+        "l": 1078.3,
+        "t": 10.7,
+        "r": 1207.3,
+        "b": 158.7,
+        "cx": 1142.8,
+        "cy": 84.7
+      },
+      "vw": 1280,
+      "vh": 800,
+      "topLetters": {
+        "mid": -241.2118682861328,
+        "top": -245.196044921875,
+        "bottom": -209.62440490722656,
+        "count": 31
+      },
+      "rightLetters": {
+        "mid": 1237.144287109375,
+        "leftEdge": 1237.144287109375,
+        "rightEdge": 1237.144287109375,
+        "count": 25
+      },
+      "clearTop": 220.3,
+      "clearRight": 29.8
+    },
+    "b": {
+      "scrollY": 552,
+      "transform": "translate(1198.15px, 739.92px) rotate(-90deg)",
+      "bank": "-90.00,-1.000,0.000,right",
+      "rotate": -90,
+      "nx": -1,
+      "ny": 0,
+      "facing": "right",
+      "sitting": false,
+      "clearance": 26,
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "box": {
+        "l": 1078.3,
+        "t": 96.5,
+        "r": 1207.3,
+        "b": 244.5,
+        "cx": 1142.8,
+        "cy": 170.5
+      },
+      "vw": 1280,
+      "vh": 800,
+      "rightLetters": {
+        "mid": 1237.144287109375,
+        "leftEdge": 1200.7376708984375,
+        "rightEdge": 1237.144287109375,
+        "count": 27
+      },
+      "clearRight": -6.6
+    },
+    "mid": {
+      "scrollY": 939,
+      "transform": "translate(1048.35px, 1308.41px) rotate(-0.676701deg)",
+      "bank": "-0.68,-0.012,-1.000,left",
+      "rotate": -0.68,
+      "nx": -0.012,
+      "ny": -1,
+      "facing": "left",
+      "sitting": false,
+      "clearance": 41.7,
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "box": {
+        "l": 990.4,
+        "t": 248.5,
+        "r": 1139.9,
+        "b": 379.2,
+        "cx": 1065.2,
+        "cy": 313.9
+      },
+      "vw": 1280,
+      "vh": 800
+    },
+    "sit": {
+      "scrollY": 569,
+      "transform": "translate(1214.15px, 779.651px) rotate(0deg)",
+      "bank": "0.00,-1.000,0.000,right",
+      "rotate": 0,
+      "nx": -1,
+      "ny": 0,
+      "facing": "right",
+      "sitting": true,
+      "clearance": 10,
+      "nudge": "0.0,0.0",
+      "nudgeMag": 0,
+      "box": {
+        "l": 1157.6,
+        "t": 90.8,
+        "r": 1305.6,
+        "b": 219.8,
+        "cx": 1231.6,
+        "cy": 155.3
+      },
+      "vw": 1280,
+      "vh": 800
+    }
+  },
+  "verdict": {
+    "bBankParallel": true,
+    "bClearancePx": -6.6,
+    "bBesideLetters": true,
+    "aNotCornerHole": true,
+    "pathContactOk": true
+  },
+  "files": {
+    "a": "phases/user-no-a.png",
+    "b": "phases/user-no-b.png",
+    "mid": "phases/user-no-mid.png",
+    "sit": "phases/user-no-sit.png"
+  },
+  "pixel": {
+    "a": {
+      "letterLeft": 1224,
+      "mouseRight": 1197,
+      "mouseBox": {
+        "l": 1133,
+        "r": 1197,
+        "t": 43,
+        "b": 138
+      },
+      "clearancePx": 27
+    },
+    "b": {
+      "letterLeft": 1224,
+      "mouseRight": 1196,
+      "mouseBox": {
+        "l": 1132,
+        "r": 1196,
+        "t": 142,
+        "b": 236
+      },
+      "clearancePx": 28
+    }
+  },
+  "e2e": "PASS",
+  "fix": {
+    "COLUMN_PAD": 12,
+    "SWEEP_BLOOM": 4,
+    "FOOT_GAP": 4,
+    "verticalSnap": "towardCenter when verticalness>0.55; else screen-up (no center blend)",
+    "softNudge": "toward-rail n only; strip +n void shove"
+  }
+}

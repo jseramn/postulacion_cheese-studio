@@ -1,0 +1,61 @@
+{
+  "cases": [
+    {
+      "name": "10-sitting.png",
+      "overlapPct": 0,
+      "soleGap": 20,
+      "pivotGap": 8,
+      "scrollY": 565,
+      "sitting": true,
+      "nx": -1,
+      "ny": -6.123233995736766e-17
+    },
+    {
+      "name": "07-top-cross.png",
+      "overlapPct": 0,
+      "soleGap": 5,
+      "pivotGap": 5,
+      "scrollY": 0,
+      "sitting": true,
+      "nx": 0.012180351648102368,
+      "ny": -0.9999258167652881
+    },
+    {
+      "name": "06-right.png",
+      "overlapPct": 0,
+      "soleGap": 0,
+      "pivotGap": 19,
+      "scrollY": 502,
+      "sitting": false,
+      "nx": -1,
+      "ny": -6.123233995736766e-17
+    },
+    {
+      "name": "08-mid-cross.png",
+      "overlapPct": 0,
+      "soleGap": null,
+      "pivotGap": 13,
+      "scrollY": 1171,
+      "sitting": false,
+      "nx": -0.060547511422527796,
+      "ny": -0.9981653163983103
+    },
+    {
+      "name": "09-left.png",
+      "overlapPct": 0,
+      "soleGap": 0,
+      "pivotGap": 7,
+      "scrollY": 1540,
+      "sitting": false,
+      "nx": 1,
+      "ny": -6.123233995736766e-17
+    }
+  ],
+  "gate": {
+    "seated": true,
+    "freezeOk": true,
+    "releaseOk": true,
+    "rearmOk": true,
+    "cascades": 0
+  }
+}
